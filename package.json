@@ -8,6 +8,7 @@
     "ansi-to-html": "",
     "string_decoder": "",
     "aws-sdk": "",
-    "uuid": ""
+    "uuid": "",
+    "glob": ""
   }
 }
