@@ -29,6 +29,7 @@ module.exports.prototype.findOrCreateKey = function(callback) {
 
   if(keyFiles.length > 0) {
     var keyName = keyFiles[0].match(/(.+)\.pem/)[1]
+    this.keyName = keyName;
     callback(keyName);
   } else {
     this.createAndSaveKeyPair(callback);
@@ -44,6 +45,7 @@ module.exports.prototype.createAndSaveKeyPair = function(callback) {
     else {
       fs.writeFile(keyName + ".pem", data.KeyMaterial, function(err) {
         if(err) return console.log(err);
+        this.keyName = keyName;
         callback(keyName);
       });
     }
