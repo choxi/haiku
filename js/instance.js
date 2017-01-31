@@ -16,7 +16,8 @@ module.exports.prototype.createInstance = function(keyName) {
     InstanceType: "t2.micro",
     MaxCount: 1,
     MinCount: 1,
-    KeyName: keyName
+    KeyName: keyName,
+    SecurityGroupIds: ["sg-0a2ea676"]
   }
 
   this.ec2.runInstances(params, function(err, data) {
@@ -47,13 +48,13 @@ module.exports.prototype.createAndSaveKeyPair = function(callback) {
   this.ec2.createKeyPair({ KeyName: keyName }, function(err, data) {
     if (err) console.log(err, err.stack);
     else {
-      fs.writeFile(keyName + ".pem", data.KeyMaterial, function(err) {
+      fs.writeFile(keyName + ".pem", data.KeyMaterial, {mode: "400"}, function(err) {
         if(err) return console.log(err);
         this.keyName = keyName;
         callback(keyName);
-      });
+      }.bind(this));
     }
-  });
+  }.bind(this));
 };
 
 module.exports.prototype.remove = function() {
@@ -78,7 +79,7 @@ module.exports.prototype.waitUntilRunning = function(callback) {
   if(this.reservation === undefined) {
     setTimeout(function() {
       this.waitUntilRunning(callback);
-    }.bind(this), 1000);
+    }.bind(this), 120000);
     return;
   }
 
@@ -97,7 +98,7 @@ module.exports.prototype.waitUntilRunning = function(callback) {
     }
 
     if(ready) {
-      callback();
+      callback(this);
     } else {
       setTimeout(this.waitUntilRunning.bind(this), 1000, callback);
     }
