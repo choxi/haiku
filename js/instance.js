@@ -53,6 +53,13 @@ module.exports.prototype.createAndSaveKeyPair = function(callback) {
 };
 
 module.exports.prototype.remove = function() {
+  this.ec2.stopInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
+    console.log(err);
+    console.log(data);
+  });
+}
+
+module.exports.prototype.instanceIds = function() {
   var instanceIds = [];
 
   for(i=0; i < this.reservation.Instances.length; i++) {
@@ -60,8 +67,5 @@ module.exports.prototype.remove = function() {
     instanceIds.push(instance.InstanceId);
   }
 
-  this.ec2.stopInstances({ InstanceIds: instanceIds }, function(err, data) {
-    console.log(err);
-    console.log(data);
-  });
+  return instanceIds;
 }
