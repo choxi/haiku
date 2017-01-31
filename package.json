@@ -1,0 +1,12 @@
+{
+  "name"    : "box",
+  "version" : "0.0.0",
+  "dependencies" : {
+    "electron": "",
+    "electron-reload": "",
+    "pty" : "",
+    "ansi-to-html": "",
+    "string_decoder": "",
+    "aws-sdk": ""
+  }
+}
