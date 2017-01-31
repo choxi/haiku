@@ -76,27 +76,30 @@ module.exports.prototype.instanceIds = function() {
 
 module.exports.prototype.waitUntilRunning = function(callback) {
   if(this.reservation === undefined) {
-    setTimeout(this.waitUntilRunning, 1000, callback);
+    setTimeout(function() {
+      this.waitUntilRunning(callback);
+    }.bind(this), 1000);
     return;
   }
 
   this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
-    var ready       = true;
-    var reservation = null;
-    var instance    = null;
+    var ready        = true;
+    var reservation  = null;
+    var instance     = null;
+    this.reservation = data.Reservations[0];
 
     for(r=0; r < data.Reservations.length; r++) {
       reservation = data.Reservations[r];
       for(i=0; i < reservation.Instances.length; i++) {
         instance = reservation.Instances[i];
-        if(instance.state !== "running") ready = false;
+        if(instance.State.Name !== "running") ready = false;
       }
     }
 
     if(ready) {
       callback();
     } else {
-      setTimeout(this.waitUntilRunning, 1000, callback);
+      setTimeout(this.waitUntilRunning.bind(this), 1000, callback);
     }
-  });
+  }.bind(this));
 }
