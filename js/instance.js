@@ -6,8 +6,22 @@ var config  = JSON.parse(fs.readFileSync("config.json"));
 module.exports = function() {
   this.ec2 = new AWS.EC2(config.ec2);
   this.findOrCreateKey(function(keyName) {
-    console.log("Key Name: " + keyName);
-  });
+    var params = {
+      ImageId: "ami-0b33d91d",
+      InstanceType: "t2.micro",
+      MaxCount: 1,
+      MinCount: 1,
+      KeyName: keyName
+    }
+
+    this.ec2.runInstances(params, function(err, data) {
+      if (err) console.log(err, err.stack); // an error occurred
+      else {
+        this.reservation = data;
+        return this.reservation;
+      }
+    }.bind(this));
+  }.bind(this));
 }
 
 module.exports.prototype.findOrCreateKey = function(callback) {
@@ -35,3 +49,17 @@ module.exports.prototype.createAndSaveKeyPair = function(callback) {
     }
   });
 };
+
+module.exports.prototype.remove = function() {
+  var instanceIds = [];
+
+  for(i=0; i < this.reservation.Instances.length; i++) {
+    instance = this.reservation.Instances[i];
+    instanceIds.push(instance.InstanceId);
+  }
+
+  this.ec2.stopInstances({ InstanceIds: instanceIds }, function(err, data) {
+    console.log(err);
+    console.log(data);
+  });
+}
