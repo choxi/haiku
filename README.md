@@ -1,6 +1,8 @@
 ## DOCS
 
 - http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
+- https://addyosmani.com/resources/essentialjsdesignpatterns/book/#constructorpatternjavascript
+- https://nodesource.com/blog/fifteen-essential-packages-to-get-started-with-electron/
 
 ### TODO
 
@@ -14,6 +16,7 @@
 5. Save instances  
 6. Set up and configure Git
 7. Set up and configure dotfiles
+8. Don't let users delete prompt
 
 ### EC2 TODO
 
