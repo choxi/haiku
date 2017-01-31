@@ -1,6 +1,7 @@
 var AWS     = require("aws-sdk");
 var uuid    = require("uuid/v4");
 var glob    = require("glob");
+var fs      = require("fs");
 var config  = JSON.parse(fs.readFileSync("config.json"));
 
 module.exports = function() {
