@@ -1,3 +1,7 @@
+## DOCS
+
+- http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EC2.html#runInstances-property
+
 ### TODO
 
 1. Set up and tear down EC2 instance

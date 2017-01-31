@@ -6,22 +6,25 @@ var config  = JSON.parse(fs.readFileSync("config.json"));
 
 module.exports = function() {
   this.ec2 = new AWS.EC2(config.ec2);
-  this.findOrCreateKey(function(keyName) {
-    var params = {
-      ImageId: "ami-0b33d91d",
-      InstanceType: "t2.micro",
-      MaxCount: 1,
-      MinCount: 1,
-      KeyName: keyName
-    }
+  this.findOrCreateKey(this.createInstance.bind(this));
+  return this;
+}
 
-    this.ec2.runInstances(params, function(err, data) {
-      if (err) console.log(err, err.stack); // an error occurred
-      else {
-        this.reservation = data;
-        return this.reservation;
-      }
-    }.bind(this));
+module.exports.prototype.createInstance = function(keyName) {
+  var params = {
+    ImageId: "ami-0b33d91d",
+    InstanceType: "t2.micro",
+    MaxCount: 1,
+    MinCount: 1,
+    KeyName: keyName
+  }
+
+  this.ec2.runInstances(params, function(err, data) {
+    if (err) console.log(err, err.stack); // an error occurred
+    else {
+      this.reservation = data;
+      return this.reservation;
+    }
   }.bind(this));
 }
 
@@ -69,4 +72,31 @@ module.exports.prototype.instanceIds = function() {
   }
 
   return instanceIds;
+}
+
+module.exports.prototype.waitUntilRunning = function(callback) {
+  if(this.reservation === undefined) {
+    setTimeout(this.waitUntilRunning, 1000, callback);
+    return;
+  }
+
+  this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
+    var ready       = true;
+    var reservation = null;
+    var instance    = null;
+
+    for(r=0; r < data.Reservations.length; r++) {
+      reservation = data.Reservations[r];
+      for(i=0; i < reservation.Instances.length; i++) {
+        instance = reservation.Instances[i];
+        if(instance.state !== "running") ready = false;
+      }
+    }
+
+    if(ready) {
+      callback();
+    } else {
+      setTimeout(this.waitUntilRunning, 1000, callback);
+    }
+  });
 }
