@@ -5,8 +5,8 @@ term.open(document.getElementById('#terminal'));
 
 var instance = new Instance();
 instance.waitUntilRunning(function(i) {
-  var pemFilePath     =  i.keyName + ".pem";
-  var sshLogin        =  "ec2-user@" + i.reservation.Instances[0].PublicIpAddress;
+  var pemFilePath     = i.keyName + ".pem";
+  var sshLogin        = "ec2-user@" + i.reservation.Instances[0].PublicIpAddress;
   var sshArgs         = ["-oStrictHostKeyChecking=no", "-i", pemFilePath, sshLogin];
   var pty             = require('pty').spawn("ssh", sshArgs, { name: "xterm-256color" });
 
