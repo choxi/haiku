@@ -57,7 +57,7 @@ module.exports.prototype.createAndSaveKeyPair = function(callback) {
   }.bind(this));
 };
 
-module.exports.prototype.remove = function() {
+  module.exports.prototype.remove = function() {
   this.ec2.stopInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
     console.log(err);
     console.log(data);
@@ -68,7 +68,7 @@ module.exports.prototype.instanceIds = function() {
   var instanceIds = [];
 
   for(i=0; i < this.reservation.Instances.length; i++) {
-    instance = this.reservation.Instances[i];
+    let instance = this.reservation.Instances[i];
     instanceIds.push(instance.InstanceId);
   }
 
@@ -85,14 +85,12 @@ module.exports.prototype.waitUntilRunning = function(callback) {
 
   this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
     var ready        = true;
-    var reservation  = null;
-    var instance     = null;
     this.reservation = data.Reservations[0];
 
     for(r=0; r < data.Reservations.length; r++) {
-      reservation = data.Reservations[r];
+      let reservation = data.Reservations[r];
       for(i=0; i < reservation.Instances.length; i++) {
-        instance = reservation.Instances[i];
+        let instance = reservation.Instances[i];
         if(instance.State.Name !== "running") ready = false;
       }
     }
