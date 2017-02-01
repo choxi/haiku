@@ -7,10 +7,10 @@
 
 ### TODO
 
+
+###### Features
+
 1. Set up and tear down EC2 instance
-
----
-
 2. Don't hardcode AWS configuration
 3. CMD-N for new window
 4. CMD-T for new tab
@@ -18,6 +18,10 @@
 6. Set up and configure Git
 7. Set up and configure dotfiles
 8. Don't let users delete prompt
+
+###### Bugs
+
+1. Use polling instead of timeout for SSH retrying
 
 ### EC2 TODO
 
