@@ -22,6 +22,8 @@
 ###### Bugs
 
 1. Use polling instead of timeout for SSH retrying
+2. Backspace isn't handled correctly
+3. Startup takes way too long
 
 ### EC2 TODO
 
