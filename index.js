@@ -7,6 +7,10 @@ const BrowserWindow = electron.BrowserWindow
 const path = require('path')
 const url = require('url')
 
+const Instance = require("./js/instance.js");
+var instance = new Instance();
+global.instance = instance;
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
@@ -54,6 +58,15 @@ app.on('activate', function () {
   if (mainWindow === null) {
     createWindow()
   }
+})
+
+app.on("will-quit", function (event) {
+  event.preventDefault();
+  instance.remove(function() {
+    console.log("THIS");
+    console.log(this);
+    this.exit();
+  }.bind(this));
 })
 
 // In this file you can include the rest of your app's specific main process

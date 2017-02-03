@@ -57,11 +57,12 @@ module.exports.prototype.createAndSaveKeyPair = function(callback) {
   }.bind(this));
 };
 
-  module.exports.prototype.remove = function() {
+module.exports.prototype.remove = function(callback) {
   this.ec2.stopInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
     console.log(err);
     console.log(data);
-  });
+    callback();
+  }.bind(this));
 }
 
 module.exports.prototype.instanceIds = function() {
@@ -96,7 +97,7 @@ module.exports.prototype.waitUntilRunning = function(callback) {
     }
 
     if(ready) {
-      callback(this);
+      callback(this.keyName, this.reservation.Instances[0].PublicIpAddress);
     } else {
       setTimeout(this.waitUntilRunning.bind(this), 1000, callback);
     }

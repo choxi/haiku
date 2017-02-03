@@ -1,12 +1,10 @@
-const Instance = require("./js/instance.js");
-
 var term = new Terminal();
 term.open(document.getElementById('#terminal'));
+var instance = require("electron").remote.getGlobal("instance");
 
-var instance = new Instance();
-instance.waitUntilRunning(function(i) {
-  var pemFilePath     = i.keyName + ".pem";
-  var sshLogin        = "ec2-user@" + i.reservation.Instances[0].PublicIpAddress;
+instance.waitUntilRunning(function(keyName, ipAddress) {
+  var pemFilePath     = keyName + ".pem";
+  var sshLogin        = "ec2-user@" + ipAddress;
   var sshArgs         = ["-oStrictHostKeyChecking=no", "-i", pemFilePath, sshLogin];
   var pty             = require('pty').spawn("ssh", sshArgs, { name: "xterm-256color" });
 
