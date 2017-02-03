@@ -74,6 +74,12 @@ module.exports.prototype.instanceIds = function() {
   return instanceIds;
 }
 
+//  Before we can SSH, we need to wait for:
+//
+//    - the EC2 reservation request to complete
+//    - the instance to change state to "running"
+//    - the instance to boot up its SSH server
+//
 module.exports.prototype.waitUntilRunning = function(callback) {
   if(this.reservation === undefined) {
     setTimeout(function() {
