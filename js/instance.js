@@ -59,8 +59,6 @@ module.exports.prototype.createAndSaveKeyPair = function(callback) {
 
 module.exports.prototype.remove = function(callback) {
   this.ec2.stopInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
-    console.log(err);
-    console.log(data);
     callback();
   }.bind(this));
 }

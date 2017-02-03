@@ -63,8 +63,7 @@ app.on('activate', function () {
 app.on("will-quit", function (event) {
   event.preventDefault();
   instance.remove(function() {
-    console.log("THIS");
-    console.log(this);
+    console.log("Stopped Instance");
     this.exit();
   }.bind(this));
 })
