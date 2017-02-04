@@ -6,7 +6,8 @@ var config  = JSON.parse(fs.readFileSync("config.json"));
 var SSH     = require("simple-ssh");
 
 module.exports = function() {
-  this.ec2 = new AWS.EC2(config.ec2);
+  this.ec2             = new AWS.EC2(config.ec2);
+  this.sshOpen         = false;
   this.findOrCreateKey(this.createInstance.bind(this));
   return this;
 }
@@ -24,10 +25,32 @@ module.exports.prototype.createInstance = function(keyName) {
   this.ec2.runInstances(params, function(err, data) {
     if (err) console.log(err, err.stack); // an error occurred
     else {
+      console.log("Instance Created");
       this.reservation = data;
-      return this.reservation;
+      this.pollInstanceState();
     }
   }.bind(this));
+}
+
+module.exports.prototype.pollSSHConnection = function() {
+  let config = {
+    host: this.reservation.Instances[0].PublicIpAddress,
+    user: 'ec2-user',
+    key: fs.readFileSync(this.keyName + ".pem"),
+    timeout: 1000
+  }
+  let ssh = new SSH(config);
+
+  ssh.exec("exit").start({
+    success: function() {
+      console.log("SSH Connection Open.")
+      this.sshOpen = true;
+    }.bind(this),
+    fail: function() {
+      console.log("Connection Closed. Checking Again in 1s");
+      setTimeout(this.pollSSHConnection.bind(this), 1000);
+    }.bind(this),
+  });
 }
 
 module.exports.prototype.findOrCreateKey = function(callback) {
@@ -85,26 +108,46 @@ module.exports.prototype.waitUntilRunning = function(callback) {
   if(this.reservation === undefined) {
     setTimeout(function() {
       this.waitUntilRunning(callback);
-    }.bind(this), 120000);
+    }.bind(this), 1000);
     return;
   }
 
+  if(!instancesReady(this.reservation)) {
+    setTimeout(function() {
+      this.waitUntilRunning(callback);
+    }.bind(this), 1000);
+    return;
+  }
+
+  if(this.sshOpen === false) {
+    setTimeout(function() {
+      this.waitUntilRunning(callback);
+    }.bind(this), 1000);
+    return;
+  }
+
+  callback(this.keyName, this.reservation.Instances[0].PublicIpAddress);
+}
+
+function instancesReady(reservation) {
+  let ready = true;
+
+  for(i=0; i < reservation.Instances.length; i++) {
+    let instance = reservation.Instances[i];
+    if(instance.State.Name !== "running") ready = false;
+  }
+
+  return ready;
+}
+
+module.exports.prototype.pollInstanceState = function() {
   this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
-    var ready        = true;
     this.reservation = data.Reservations[0];
-
-    for(r=0; r < data.Reservations.length; r++) {
-      let reservation = data.Reservations[r];
-      for(i=0; i < reservation.Instances.length; i++) {
-        let instance = reservation.Instances[i];
-        if(instance.State.Name !== "running") ready = false;
-      }
-    }
-
-    if(ready) {
-      callback(this.keyName, this.reservation.Instances[0].PublicIpAddress);
+    if(!instancesReady(this.reservation)) {
+      setTimeout(this.pollInstanceState.bind(this), 1000);
     } else {
-      setTimeout(this.waitUntilRunning.bind(this), 1000, callback);
+      console.log("Instance Running");
+      this.pollSSHConnection();
     }
   }.bind(this));
 }
