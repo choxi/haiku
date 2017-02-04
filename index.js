@@ -1,14 +1,12 @@
-const electron = require('electron')
-// Module to control application life.
-const app = electron.app
-// Module to create native browser window.
+const electron      = require('electron')
+const app           = electron.app
 const BrowserWindow = electron.BrowserWindow
 
 const path = require('path')
-const url = require('url')
+const url  = require('url')
 
-const Instance = require("./js/instance.js");
-var instance = new Instance();
+const Instance  = require("./js/instance.js");
+var instance    = new Instance();
 global.instance = instance;
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -67,6 +65,3 @@ app.on("will-quit", function (event) {
     this.exit();
   }.bind(this));
 })
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
