@@ -24,7 +24,7 @@ instance.waitUntilRunning(function(keyName, ipAddress) {
       pty.write(key);
     } else if (ev.keyCode == 8) {
      // Do not delete the prompt
-      if (term.x > 2) {
+      if (term.x > 28) {
         term.write('\b \b');
       }
     } else if (printable) {
