@@ -26,28 +26,8 @@ module.exports.prototype.createInstance = function(keyName) {
     if (err) console.log(err, err.stack); // an error occurred
     else {
       this.reservation = data;
-      console.log("Waiting for Instance to Start...")
-      this.pollInstanceState();
     }
   }.bind(this));
-}
-
-module.exports.prototype.pollSSHConnection = function() {
-  let config = {
-    host: this.reservation.Instances[0].PublicIpAddress,
-    user: 'ec2-user',
-    key: fs.readFileSync(this.keyName + ".pem"),
-    timeout: 1000
-  }
-  let ssh = new SSH(config);
-
-  ssh.exec("exit").start({
-    success: function() {
-      console.log("Instance Ready");
-      this.sshOpen = true;
-    }.bind(this),
-    fail: this.pollSSHConnection.bind(this)
-  });
 }
 
 module.exports.prototype.findOrCreateKey = function(callback) {
@@ -106,24 +86,42 @@ module.exports.prototype.waitUntilRunning = function(callback) {
     setTimeout(function() {
       this.waitUntilRunning(callback);
     }.bind(this), 1000);
-    return;
+  } else {
+    console.log("Waiting for Instance to Start...")
+    this.pollInstanceState(callback);
   }
+}
 
-  if(!instancesReady(this.reservation)) {
-    setTimeout(function() {
-      this.waitUntilRunning(callback);
-    }.bind(this), 1000);
-    return;
+module.exports.prototype.pollInstanceState = function(callback) {
+  this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
+    this.reservation = data.Reservations[0];
+    if(!instancesReady(this.reservation)) {
+      setTimeout(function() { this.pollInstanceState(callback) }.bind(this), 1000);
+    } else {
+      console.log("Waiting for SSH Connection...")
+      this.pollSSHConnection(callback);
+    }
+  }.bind(this));
+}
+
+module.exports.prototype.pollSSHConnection = function(callback) {
+  let config = {
+    host: this.reservation.Instances[0].PublicIpAddress,
+    user: 'ec2-user',
+    key: fs.readFileSync(this.keyName + ".pem"),
+    timeout: 1000
   }
+  let ssh = new SSH(config);
 
-  if(this.sshOpen === false) {
-    setTimeout(function() {
-      this.waitUntilRunning(callback);
-    }.bind(this), 1000);
-    return;
-  }
-
-  callback(this.keyName, this.reservation.Instances[0].PublicIpAddress);
+  ssh.exec("exit").start({
+    success: function() {
+      console.log("Instance Ready");
+      callback(this.keyName, this.reservation.Instances[0].PublicIpAddress);
+    }.bind(this),
+    fail: function() {
+      this.pollSSHConnection(callback);
+    }.bind(this)
+  });
 }
 
 function instancesReady(reservation) {
@@ -135,16 +133,4 @@ function instancesReady(reservation) {
   }
 
   return ready;
-}
-
-module.exports.prototype.pollInstanceState = function() {
-  this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
-    this.reservation = data.Reservations[0];
-    if(!instancesReady(this.reservation)) {
-      setTimeout(this.pollInstanceState.bind(this), 1000);
-    } else {
-      console.log("Waiting for SSH Connection...")
-      this.pollSSHConnection();
-    }
-  }.bind(this));
 }
