@@ -1,5 +1,6 @@
 var term = new Terminal();
 term.open(document.getElementById('#terminal'));
+term.fit();
 var remote   = require("electron").remote
 var instance = remote.getGlobal("instance");
 
