@@ -1,6 +1,8 @@
 var term = new Terminal();
 term.open(document.getElementById('#terminal'));
-var instance = require("electron").remote.getGlobal("instance");
+var remote   = require("electron").remote
+remote.getGlobal("console").log("Loading Application.js");
+var instance = remote.getGlobal("instance");
 
 instance.waitUntilRunning(function(keyName, ipAddress) {
   var pemFilePath     = keyName + ".pem";
