@@ -7,7 +7,6 @@ var SSH     = require("simple-ssh");
 
 module.exports = function() {
   this.ec2             = new AWS.EC2(config.ec2);
-  this.sshOpen         = false;
   this.findOrCreateKey(this.createInstance.bind(this));
   return this;
 }
