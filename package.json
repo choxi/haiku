@@ -8,6 +8,7 @@
     "string_decoder": "",
     "aws-sdk": "",
     "uuid": "",
-    "glob": ""
+    "glob": "",
+    "simple-ssh": ""
   }
 }
