@@ -6,7 +6,8 @@ var config  = JSON.parse(fs.readFileSync("config.json"));
 var SSH     = require("simple-ssh");
 
 module.exports = function() {
-  this.ec2             = new AWS.EC2(config.ec2);
+  console.log("Creating Instance...");
+  this.ec2 = new AWS.EC2(config.ec2);
   this.findOrCreateKey(this.createInstance.bind(this));
   return this;
 }
