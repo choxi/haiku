@@ -2,8 +2,11 @@ var term = new Terminal({ cursorBlink: true });
 term.open(document.getElementById('#terminal'));
 term.fit();
 
-var remote   = require("electron").remote
-var instance = remote.getGlobal("instance");
+var remote        = require("electron").remote
+var instance      = remote.getGlobal("instance");
+var currentWindow = remote.getCurrentWindow()
+
+currentWindow.on("resize", term.fit);
 
 instance.waitUntilRunning(function(keyName, ipAddress) {
   var pemFilePath     = keyName + ".pem";
