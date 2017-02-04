@@ -1,7 +1,6 @@
 var term = new Terminal();
 term.open(document.getElementById('#terminal'));
 var remote   = require("electron").remote
-remote.getGlobal("console").log("Loading Application.js");
 var instance = remote.getGlobal("instance");
 
 instance.waitUntilRunning(function(keyName, ipAddress) {

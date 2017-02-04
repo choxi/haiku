@@ -25,8 +25,8 @@ module.exports.prototype.createInstance = function(keyName) {
   this.ec2.runInstances(params, function(err, data) {
     if (err) console.log(err, err.stack); // an error occurred
     else {
-      console.log("Instance Created");
       this.reservation = data;
+      console.log("Waiting for Instance to Start...")
       this.pollInstanceState();
     }
   }.bind(this));
@@ -43,13 +43,10 @@ module.exports.prototype.pollSSHConnection = function() {
 
   ssh.exec("exit").start({
     success: function() {
-      console.log("SSH Connection Open.")
+      console.log("Instance Ready");
       this.sshOpen = true;
     }.bind(this),
-    fail: function() {
-      console.log("Connection Closed. Checking Again in 1s");
-      setTimeout(this.pollSSHConnection.bind(this), 1000);
-    }.bind(this),
+    fail: this.pollSSHConnection.bind(this)
   });
 }
 
@@ -146,7 +143,7 @@ module.exports.prototype.pollInstanceState = function() {
     if(!instancesReady(this.reservation)) {
       setTimeout(this.pollInstanceState.bind(this), 1000);
     } else {
-      console.log("Instance Running");
+      console.log("Waiting for SSH Connection...")
       this.pollSSHConnection();
     }
   }.bind(this));

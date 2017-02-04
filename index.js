@@ -8,7 +8,7 @@ const path = require('path')
 const url = require('url')
 
 const Instance = require("./js/instance.js");
-console.log("Creating Instance.");
+console.log("Creating Instance...");
 var instance = new Instance();
 global.instance = instance;
 
