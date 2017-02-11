@@ -15,7 +15,11 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 600, height: 400})
+  mainWindow = new BrowserWindow({
+    icon: './images/Logo - Sunrise - Small - Blue.png',
+    width: 600,
+    height: 400
+  })
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
