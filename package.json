@@ -1,14 +1,17 @@
 {
-  "name"    : "box",
-  "version" : "0.0.0",
-  "dependencies" : {
-    "electron": "",
-    "pty" : "",
+  "name": "box",
+  "version": "0.0.0",
+  "dependencies": {
+    "electron": "1.4.15",
+    "pty": "",
     "ansi-to-html": "",
     "string_decoder": "",
     "aws-sdk": "",
     "uuid": "",
     "glob": "",
     "simple-ssh": ""
+  },
+  "devDependencies": {
+    "electron-packager": "^8.5.1"
   }
 }
