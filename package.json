@@ -9,7 +9,8 @@
     "aws-sdk": "",
     "uuid": "",
     "glob": "",
-    "simple-ssh": ""
+    "simple-ssh": "",
+    "electron-log": ""
   },
   "devDependencies": {
     "electron-packager": "^8.5.1"

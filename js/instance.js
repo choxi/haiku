@@ -4,9 +4,10 @@ var glob    = require("glob");
 var fs      = require("fs");
 var config  = JSON.parse(fs.readFileSync("config.json"));
 var SSH     = require("simple-ssh");
+var log     = require('electron-log');
 
 module.exports = function() {
-  console.log("Creating Instance...");
+  log.info("Creating Instance...");
   this.ec2 = new AWS.EC2(config.ec2);
   this.findOrCreateKey(this.createInstance.bind(this));
   return this;
@@ -23,7 +24,7 @@ module.exports.prototype.createInstance = function(keyName) {
   }
 
   this.ec2.runInstances(params, function(err, data) {
-    if (err) console.log(err, err.stack); // an error occurred
+    if (err) log.error(err, err.stack); // an error occurred
     else {
       this.reservation = data;
     }
@@ -47,10 +48,10 @@ module.exports.prototype.createAndSaveKeyPair = function(callback) {
   var keyName = "Box-" + keyId;
 
   this.ec2.createKeyPair({ KeyName: keyName }, function(err, data) {
-    if (err) console.log(err, err.stack);
+    if (err) log.error(err, err.stack);
     else {
       fs.writeFile(keyName + ".pem", data.KeyMaterial, {mode: "400"}, function(err) {
-        if(err) return console.log(err);
+        if(err) return log.error(err);
         this.keyName = keyName;
         callback(keyName);
       }.bind(this));
@@ -87,7 +88,7 @@ module.exports.prototype.waitUntilRunning = function(callback) {
       this.waitUntilRunning(callback);
     }.bind(this), 1000);
   } else {
-    console.log("Waiting for Instance to Start...")
+    log.info("Waiting for Instance to Start...")
     this.pollInstanceState(callback);
   }
 }
@@ -98,7 +99,7 @@ module.exports.prototype.pollInstanceState = function(callback) {
     if(!instancesReady(this.reservation)) {
       setTimeout(function() { this.pollInstanceState(callback) }.bind(this), 1000);
     } else {
-      console.log("Waiting for SSH Connection...")
+      log.info("Waiting for SSH Connection...")
       this.pollSSHConnection(callback);
     }
   }.bind(this));
@@ -115,7 +116,7 @@ module.exports.prototype.pollSSHConnection = function(callback) {
 
   ssh.exec("exit").start({
     success: function() {
-      console.log("Instance Ready");
+      log.info("Instance Ready");
       callback(this.keyName, this.reservation.Instances[0].PublicIpAddress);
     }.bind(this),
     fail: function() {
