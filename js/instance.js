@@ -6,7 +6,6 @@ var uuid    = require("uuid/v4");
 var glob    = require("glob");
 var fs      = require("fs");
 var config  = JSON.parse(fs.readFileSync(app.getAppPath() + "/config.json"));
-console.log(config)
 var SSH     = require("simple-ssh");
 var log     = require('electron-log');
 
@@ -125,7 +124,6 @@ module.exports.prototype.pollSSHConnection = function(callback) {
   ssh.exec("exit").start({
     success: function() {
       log.info("Instance Ready");
-      let keyPath = app.getAppPath() + "/"
       callback(this.keyPath(), this.reservation.Instances[0].PublicIpAddress);
     }.bind(this),
     fail: function() {
