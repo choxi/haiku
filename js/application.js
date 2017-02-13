@@ -2,16 +2,16 @@ var term = new Terminal({ cursorBlink: true });
 term.open(document.getElementById('#terminal'));
 term.fit();
 
-var remote        = require("electron").remote
+var electron      = require("electron")
+var remote        = electron.remote
 var instance      = remote.getGlobal("instance");
 var currentWindow = remote.getCurrentWindow()
 
 currentWindow.on("resize", term.fit);
 
-instance.waitUntilRunning(function(keyName, ipAddress) {
-  var pemFilePath     = keyName + ".pem";
+instance.waitUntilRunning(function(keyPath, ipAddress) {
   var sshLogin        = "ec2-user@" + ipAddress;
-  var sshArgs         = ["-oStrictHostKeyChecking=no", "-i", pemFilePath, sshLogin];
+  var sshArgs         = ["-oStrictHostKeyChecking=no", "-i", keyPath, sshLogin];
   var pty             = require('pty').spawn("ssh", sshArgs, { name: "xterm-256color" });
 
   pty.on("data", function(data) {

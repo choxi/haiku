@@ -1,8 +1,12 @@
+const electron      = require('electron')
+const app           = electron.app
+
 var AWS     = require("aws-sdk");
 var uuid    = require("uuid/v4");
 var glob    = require("glob");
 var fs      = require("fs");
-var config  = JSON.parse(fs.readFileSync("config.json"));
+var config  = JSON.parse(fs.readFileSync(app.getAppPath() + "/config.json"));
+console.log(config)
 var SSH     = require("simple-ssh");
 var log     = require('electron-log');
 
@@ -50,7 +54,7 @@ module.exports.prototype.createAndSaveKeyPair = function(callback) {
   this.ec2.createKeyPair({ KeyName: keyName }, function(err, data) {
     if (err) log.error(err, err.stack);
     else {
-      fs.writeFile(keyName + ".pem", data.KeyMaterial, {mode: "400"}, function(err) {
+      fs.writeFile(app.getAppPath() + "/" + keyName + ".pem", data.KeyMaterial, {mode: "400"}, function(err) {
         if(err) return log.error(err);
         this.keyName = keyName;
         callback(keyName);
@@ -105,11 +109,15 @@ module.exports.prototype.pollInstanceState = function(callback) {
   }.bind(this));
 }
 
+module.exports.prototype.keyPath = function() {
+  return app.getAppPath() + "/" + this.keyName + ".pem";
+}
+
 module.exports.prototype.pollSSHConnection = function(callback) {
   let config = {
     host: this.reservation.Instances[0].PublicIpAddress,
     user: 'ec2-user',
-    key: fs.readFileSync(this.keyName + ".pem"),
+    key: fs.readFileSync(this.keyPath()),
     timeout: 1000
   }
   let ssh = new SSH(config);
@@ -117,7 +125,8 @@ module.exports.prototype.pollSSHConnection = function(callback) {
   ssh.exec("exit").start({
     success: function() {
       log.info("Instance Ready");
-      callback(this.keyName, this.reservation.Instances[0].PublicIpAddress);
+      let keyPath = app.getAppPath() + "/"
+      callback(this.keyPath(), this.reservation.Instances[0].PublicIpAddress);
     }.bind(this),
     fail: function() {
       this.pollSSHConnection(callback);
