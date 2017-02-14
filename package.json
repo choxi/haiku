@@ -13,9 +13,13 @@
     "electron-log": ""
   },
   "devDependencies": {
-    "electron-packager": "^8.5.1"
+    "electron-packager": "^8.5.1",
+    "png2icns": "0.0.1"
   },
   "scripts": {
-    "build": "electron-packager . haiku --platform=darwin --overwrite --icon=./images/logo.icns"
+    "build-icon": "png2icns images/logo.icns images/Logo\\ -\\ ICNS.png",
+    "build-app": "electron-packager . haiku --platform=darwin --overwrite --icon=./images/logo.icns",
+    "build": "npm run build-icon; npm run build-app",
+    "open": "open haiku-darwin-x64/haiku.app"
   }
 }
