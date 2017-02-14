@@ -1,6 +1,6 @@
 {
-  "name": "box",
-  "version": "0.0.0",
+  "name": "haiku",
+  "version": "0.0.1",
   "dependencies": {
     "electron": "1.4.15",
     "pty": "",
