@@ -2,3 +2,4 @@ config.json
 node_modules
 *.pem
 scratch.js
+haiku-darwin-x64
