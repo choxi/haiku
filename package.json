@@ -14,5 +14,8 @@
   },
   "devDependencies": {
     "electron-packager": "^8.5.1"
+  },
+  "scripts": {
+    "build": "electron-packager . haiku --platform=darwin --overwrite --icon=./images/logo.icns"
   }
 }
