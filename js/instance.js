@@ -14,6 +14,7 @@ class Instance extends EventEmitter {
   constructor() {
     super()
     log.info("Creating Instance...");
+    this.emit("creating")
     this.ec2 = new AWS.EC2(config.ec2);
     this.findOrCreateKey(this.createInstance.bind(this));
     return this;
@@ -95,6 +96,7 @@ class Instance extends EventEmitter {
       }.bind(this), 1000);
     } else {
       log.info("Waiting for Instance to Start...")
+      this.emit("starting")
       this.pollInstanceState(callback);
     }
   }
@@ -105,6 +107,7 @@ class Instance extends EventEmitter {
       if(!instancesReady(this.reservation)) {
         setTimeout(function() { this.pollInstanceState(callback) }.bind(this), 1000);
       } else {
+        this.emit("connecting")
         log.info("Waiting for SSH Connection...")
         this.pollSSHConnection(callback);
       }
@@ -127,6 +130,7 @@ class Instance extends EventEmitter {
     ssh.exec("exit").start({
       success: function() {
         log.info("Instance Ready");
+        this.emit("ready")
         callback(this.keyPath(), this.reservation.Instances[0].PublicIpAddress);
       }.bind(this),
       fail: function() {
