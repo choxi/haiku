@@ -1,3 +1,9 @@
+var ProgressBar = require('progressbar.js')
+var progress = new ProgressBar.SemiCircle('.progress-bar', {
+  strokeWidth: 20,
+  color: "#FF8000"
+})
+
 var term = new Terminal({ cursorBlink: true });
 term.open(document.getElementById('#terminal'));
 term.fit();
@@ -9,20 +15,23 @@ var currentWindow = remote.getCurrentWindow()
 
 currentWindow.on("resize", term.fit);
 
-instance.on("creating", function() {
-  $(".loading-status").text("Creating Instance...")
-})
+$(".loading-status").text("Creating Instance...")
+progress.animate(0.25, {duration: 40000})
 
 instance.on("starting", function() {
+  progress.animate(0.5, {duration: 17000});
   $(".loading-status").text("Starting...")
 })
 
 instance.on("connecting", function() {
+  progress.animate(0.75, {duration: 17000});
   $(".loading-status").text("Connecting...")
 })
 
 instance.on("ready", function() {
-  $(".loading-screen").hide()
+  progress.animate(1, function() {
+    $(".loading-screen").hide()
+  })
 })
 
 instance.waitUntilRunning(function(keyPath, ipAddress) {
