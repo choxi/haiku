@@ -9,8 +9,23 @@ var currentWindow = remote.getCurrentWindow()
 
 currentWindow.on("resize", term.fit);
 
-instance.waitUntilRunning(function(keyPath, ipAddress) {
+instance.on("creating", function() {
+  $(".loading-status").text("Creating Instance...")
+})
+
+instance.on("starting", function() {
+  $(".loading-status").text("Starting...")
+})
+
+instance.on("connecting", function() {
+  $(".loading-status").text("Connecting...")
+})
+
+instance.on("ready", function() {
   $(".loading-screen").hide()
+})
+
+instance.waitUntilRunning(function(keyPath, ipAddress) {
   var sshLogin        = "ec2-user@" + ipAddress;
   var sshArgs         = ["-oStrictHostKeyChecking=no", "-i", keyPath, sshLogin];
   var pty             = require('pty').spawn("ssh", sshArgs, { name: "xterm-256color" });
