@@ -10,6 +10,7 @@ var currentWindow = remote.getCurrentWindow()
 currentWindow.on("resize", term.fit);
 
 instance.waitUntilRunning(function(keyPath, ipAddress) {
+  $(".loading-screen").hide()
   var sshLogin        = "ec2-user@" + ipAddress;
   var sshArgs         = ["-oStrictHostKeyChecking=no", "-i", keyPath, sshLogin];
   var pty             = require('pty').spawn("ssh", sshArgs, { name: "xterm-256color" });
