@@ -22,10 +22,16 @@ html, body {
   margin-top: 140px;
 }
 
-.loading-screen .progress-bar {
+.progress-bar {
   width: 200px;
   margin: 100px auto 0;
   position: relative;
+}
+
+.progress-bar .outer-bar {
+  width: 280px;
+  margin-top: -140px;
+  margin-left: -40px;
 }
 
 .progress-bar .center {
