@@ -25,6 +25,17 @@ html, body {
 .loading-screen .progress-bar {
   width: 200px;
   margin: 100px auto 0;
+  position: relative;
+}
+
+.progress-bar .center {
+  background: black;
+  height: 60px;
+  width: 120px;
+  border-radius: 120px 120px 0 0;
+  position: absolute;
+  top: 40px;
+  left: 40px;
 }
 
 body {

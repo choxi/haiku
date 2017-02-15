@@ -1,5 +1,5 @@
 var ProgressBar = require('progressbar.js')
-var progress = new ProgressBar.SemiCircle('.progress-bar', {
+var progress = new ProgressBar.SemiCircle('.progress-bar .bar', {
   strokeWidth: 20,
   color: "#FF8000"
 })
