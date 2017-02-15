@@ -10,7 +10,8 @@
     "uuid": "",
     "glob": "",
     "simple-ssh": "",
-    "electron-log": ""
+    "electron-log": "",
+    "progressbar.js": "1.0.1"
   },
   "devDependencies": {
     "electron-packager": "^8.5.1",
