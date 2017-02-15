@@ -17,7 +17,7 @@
     "png2icns": "0.0.1"
   },
   "scripts": {
-    "build-icon": "png2icns images/logo.icns images/Logo\\ -\\ ICNS.png",
+    "build-icon": "png2icns images/Logo\\ -\\ ICNS.png && mv icon.icns images/logo.icns",
     "build-app": "electron-packager . haiku --platform=darwin --overwrite --icon=./images/logo.icns",
     "build": "npm run build-icon; npm run build-app",
     "open": "open haiku-darwin-x64/haiku.app"
