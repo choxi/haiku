@@ -1,5 +1,6 @@
 const electron      = require('electron')
 const app           = electron.app
+const EventEmitter = require('events');
 
 var AWS     = require("aws-sdk");
 var uuid    = require("uuid/v4");
@@ -9,8 +10,9 @@ var config  = JSON.parse(fs.readFileSync(app.getAppPath() + "/config.json"));
 var SSH     = require("simple-ssh");
 var log     = require('electron-log');
 
-class Instance {
+class Instance extends EventEmitter {
   constructor() {
+    super()
     log.info("Creating Instance...");
     this.ec2 = new AWS.EC2(config.ec2);
     this.findOrCreateKey(this.createInstance.bind(this));
