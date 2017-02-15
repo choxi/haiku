@@ -5,7 +5,7 @@ var innerProgress = new ProgressBar.SemiCircle('.progress-bar .inner-bar', {
 })
 
 var outerProgress = new ProgressBar.SemiCircle('.progress-bar .outer-bar', {
-  strokeWidth: 15,
+  strokeWidth: 14,
   color: "#D0E162"
 })
 
@@ -21,17 +21,17 @@ var currentWindow = remote.getCurrentWindow()
 currentWindow.on("resize", term.fit);
 
 $(".loading-status").text("Creating Instance...")
-innerProgress.animate(0.25, {duration: 40000})
+innerProgress.animate(0.30, {duration: 40000})
 outerProgress.animate(0.25, {duration: 40000})
 
 instance.on("starting", function() {
-  innerProgress.animate(0.5, {duration: 17000});
+  innerProgress.animate(0.65, {duration: 17000});
   outerProgress.animate(0.5, {duration: 17000});
   $(".loading-status").text("Starting...")
 })
 
 instance.on("connecting", function() {
-  innerProgress.animate(0.75, {duration: 17000});
+  innerProgress.animate(0.95, {duration: 17000});
   outerProgress.animate(0.75, {duration: 17000});
   $(".loading-status").text("Connecting...")
 })
