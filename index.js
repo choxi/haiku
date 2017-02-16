@@ -1,13 +1,10 @@
-const electron      = require('electron')
-const app           = electron.app
-const BrowserWindow = electron.BrowserWindow
+const electron        = require('electron')
+const app             = electron.app
+const BrowserWindow   = electron.BrowserWindow
+const path            = require('path')
+const url             = require('url')
 
-const path = require('path')
-const url  = require('url')
-
-const Instance  = require("./js/instance.js");
-var instance    = new Instance();
-global.instance = instance;
+global.app = app
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.

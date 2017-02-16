@@ -1,6 +1,7 @@
 const electron      = require('electron')
-const app           = electron.app
-const EventEmitter = require('events');
+const remote        = electron.remote
+const app           = remote.getGlobal("app")
+const EventEmitter  = require('events');
 
 var AWS     = require("aws-sdk");
 var uuid    = require("uuid/v4");

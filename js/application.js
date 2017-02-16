@@ -13,9 +13,8 @@ var term = new Terminal({ cursorBlink: true });
 term.open(document.getElementById('#terminal'));
 term.fit();
 
-var electron      = require("electron")
-var remote        = electron.remote
-var instance      = remote.getGlobal("instance");
+const Instance  = require("./js/instance.js");
+var instance    = new Instance();
 
 $(".loading-status").text("Creating Instance...")
 innerProgress.animate(0.30, {duration: 40000})
