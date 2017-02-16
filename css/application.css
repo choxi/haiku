@@ -1,6 +1,65 @@
 html, body {
   height: 100%;
   width: 100%;
+  font-family: Helvetica, arial;
+  color: #555;
+}
+
+.select-stack {
+  height: 100%;
+  width: 100%;
+  background: #4db6c1;
+}
+
+.select-stack .stacks {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 80px;
+}
+
+.select-stack .ruby, .select-stack .javascript, .select-stack .tensorflow {
+  border: 6px solid gray;
+  border-radius: 4px;
+  width: 80px;
+  height: 80px;
+  text-align: center;
+  margin: 0 30px
+}
+
+.select-stack .ruby:hover, .select-stack .javascript:hover, .select-stack .tensorflow:hover {
+  border-color: #53D9E7;
+}
+
+.select-stack .ruby {
+  background: #FCB46B;
+}
+
+.select-stack .javascript {
+  background: #F5FFB2;
+}
+
+.select-stack .tensorflow {
+  background: #BCF2F8;
+}
+
+.select-stack img {
+  width: 50%;
+  margin-top: 30%;
+}
+
+.select-stack p {
+  margin-top: 35px;
+}
+
+.select-stack h3 {
+  text-align: center;
+  text-transform: uppercase;
+  padding-top: 80px;
+  margin-top: 0;
+}
+
+.select-stack .javascript img, .select-stack .tensorflow img  {
+  width: 40%;
 }
 
 .loading-screen {
@@ -16,6 +75,7 @@ html, body {
   bottom: 0;
   text-align: center;
   z-index: 1;
+  display: none;
 }
 
 .loading-screen h1 {
