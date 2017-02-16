@@ -60,3 +60,9 @@ instance.waitUntilRunning(function(keyPath, ipAddress) {
 });
 
 window.addEventListener("resize", term.fit.bind(term))
+window.onbeforeunload = function(event) {
+  if(instance.status !== "stopped") {
+    event.returnValue = false
+    instance.remove(window.close.bind(window)) 
+  }
+}

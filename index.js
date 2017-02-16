@@ -58,11 +58,3 @@ app.on('activate', function () {
     createWindow()
   }
 })
-
-app.on("will-quit", function (event) {
-  event.preventDefault();
-  instance.remove(function() {
-    console.log("Stopped Instance");
-    this.exit();
-  }.bind(this));
-})

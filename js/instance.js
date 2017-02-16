@@ -15,6 +15,7 @@ class Instance extends EventEmitter {
   constructor() {
     super()
     log.info("Creating Instance...");
+    this.status = "running"
     this.emit("creating")
     this.ec2 = new AWS.EC2(config.ec2);
     this.findOrCreateKey(this.createInstance.bind(this));
@@ -68,7 +69,11 @@ class Instance extends EventEmitter {
   }
 
   remove(callback) {
+    log.info("Stopping Instance")
     this.ec2.stopInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
+      if(err) log.error(err)
+
+      this.status = "stopped"
       callback();
     }.bind(this));
   }
