@@ -16,9 +16,6 @@ term.fit();
 var electron      = require("electron")
 var remote        = electron.remote
 var instance      = remote.getGlobal("instance");
-var currentWindow = remote.getCurrentWindow()
-
-window.addEventListener("resize", term.fit.bind(term));
 
 $(".loading-status").text("Creating Instance...")
 innerProgress.animate(0.30, {duration: 40000})
@@ -56,5 +53,11 @@ instance.waitUntilRunning(function(keyPath, ipAddress) {
     pty.write(data)
   })
 
+  term.on('resize', function (size) {
+    pty.resize(size.cols, size.rows)
+  })
+
   term.focus();
 });
+
+window.addEventListener("resize", term.fit.bind(term))
