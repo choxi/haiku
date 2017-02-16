@@ -12,8 +12,10 @@ var SSH     = require("simple-ssh");
 var log     = require('electron-log');
 
 class Instance extends EventEmitter {
-  constructor() {
+  constructor(params) {
     super()
+
+    this.params = params
     log.info("Creating Instance...");
     this.status = "running"
     this.emit("creating")
@@ -24,7 +26,7 @@ class Instance extends EventEmitter {
 
   createInstance(keyName) {
     var params = {
-      ImageId: "ami-0b33d91d",
+      ImageId: this.params.ami,
       InstanceType: "t2.micro",
       MaxCount: 1,
       MinCount: 1,
