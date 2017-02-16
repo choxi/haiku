@@ -18,7 +18,7 @@ var remote        = electron.remote
 var instance      = remote.getGlobal("instance");
 var currentWindow = remote.getCurrentWindow()
 
-currentWindow.on("resize", term.fit);
+window.addEventListener("resize", term.fit.bind(term));
 
 $(".loading-status").text("Creating Instance...")
 innerProgress.animate(0.30, {duration: 40000})
