@@ -1,4 +1,6 @@
-var ProgressBar = require('progressbar.js')
+const ProgressBar = require('progressbar.js')
+const Instance    = require("./js/instance.js");
+
 var innerProgress = new ProgressBar.SemiCircle('.progress-bar .inner-bar', {
   strokeWidth: 20,
   color: "#FF8000"
@@ -13,7 +15,6 @@ var term = new Terminal({ cursorBlink: true });
 term.open(document.getElementById('#terminal'));
 term.fit();
 
-const Instance  = require("./js/instance.js");
 var instance    = new Instance();
 
 $(".loading-status").text("Creating Instance...")
