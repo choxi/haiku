@@ -1,6 +1,14 @@
 const ProgressBar = require('progressbar.js')
 const Instance    = require("./js/instance.js");
 
+$(function() {
+  $(".stacks .ruby, .stacks .javascript, .stacks .tensorflow").click(function(event) {
+    $stack          = $(this)
+    let ami         = $stack.data("ami")
+    var instance    = new Instance({ami: ami});
+  });
+});
+
 var innerProgress = new ProgressBar.SemiCircle('.progress-bar .inner-bar', {
   strokeWidth: 20,
   color: "#FF8000"
@@ -14,8 +22,6 @@ var outerProgress = new ProgressBar.SemiCircle('.progress-bar .outer-bar', {
 var term = new Terminal({ cursorBlink: true });
 term.open(document.getElementById('#terminal'));
 term.fit();
-
-var instance    = new Instance();
 
 $(".loading-status").text("Creating Instance...")
 innerProgress.animate(0.30, {duration: 40000})
