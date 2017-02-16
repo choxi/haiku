@@ -52,22 +52,9 @@ instance.waitUntilRunning(function(keyPath, ipAddress) {
     term.write(data);
   });
 
-  term.on('key', function (key, ev) {
-    var printable = (
-      !ev.altKey && !ev.altGraphKey && !ev.ctrlKey && !ev.metaKey
-    );
-
-    if (ev.keyCode == 13) {
-      pty.write(key);
-    } else if (ev.keyCode == 8) {
-     // Do not delete the prompt
-      if (term.x > 28) {
-        term.write('\b \b');
-      }
-    } else if (printable) {
-      pty.write(key);
-    }
-  });
+  term.on("data", function(data) {
+    pty.write(data)
+  })
 
   term.focus();
 });
