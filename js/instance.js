@@ -25,21 +25,28 @@ class Instance extends EventEmitter {
   }
 
   createInstance(keyName) {
-    var params = {
-      ImageId: this.params.ami,
-      InstanceType: "t2.micro",
-      MaxCount: 1,
-      MinCount: 1,
-      KeyName: keyName,
-      SecurityGroupIds: ["sg-0a2ea676"]
-    }
-
-    this.ec2.runInstances(params, function(err, data) {
-      if (err) log.error(err, err.stack); // an error occurred
-      else {
-        this.reservation = data;
+    if(this.params.reservation) {
+      this.ec2.startInstances({InstanceIds: this.instanceIds(this.params.reservation)}, function(err, data) {
+        if(err) log.error(err)
+        this.reservation = this.params.reservation
+      }.bind(this))
+    } else {
+      var params = {
+        ImageId: this.params.ami,
+        InstanceType: "t2.micro",
+        MaxCount: 1,
+        MinCount: 1,
+        KeyName: keyName,
+        SecurityGroupIds: ["sg-0a2ea676"]
       }
-    }.bind(this));
+
+      this.ec2.runInstances(params, function(err, data) {
+        if (err) log.error(err, err.stack); // an error occurred
+        else {
+          this.reservation = data;
+        }
+      }.bind(this));
+    }
   }
 
   findOrCreateKey(callback) {
@@ -81,11 +88,12 @@ class Instance extends EventEmitter {
     }.bind(this));
   }
 
-  instanceIds() {
+  instanceIds(r) {
     var instanceIds = [];
+    let reservation = r || this.reservation
 
-    for(let i=0; i < this.reservation.Instances.length; i++) {
-      let instance = this.reservation.Instances[i];
+    for(let i=0; i < reservation.Instances.length; i++) {
+      let instance = reservation.Instances[i];
       instanceIds.push(instance.InstanceId);
     }
 
