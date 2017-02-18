@@ -150,7 +150,10 @@ class Instance extends EventEmitter {
         this.emit("ready")
         callback(this.keyPath(), this.reservation.Instances[0].PublicIpAddress);
       }.bind(this),
-      fail: function() {
+      fail: function(err) {
+        if(err.message !== "Timed out while waiting for handshake" && err.code !== "ECONNREFUSED") {
+          log.error(err)
+        }
         this.pollSSHConnection(callback);
       }.bind(this)
     });
