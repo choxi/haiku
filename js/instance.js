@@ -74,6 +74,7 @@ class Instance extends EventEmitter {
     log.info("Stopping Instance")
     this.ec2.stopInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
       if(err) log.error(err)
+      fs.writeFileSync(app.getAppPath() + "/reservation.json", JSON.stringify(this.reservation))
 
       this.status = "stopped"
       callback();

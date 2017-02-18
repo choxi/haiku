@@ -4,3 +4,4 @@ node_modules
 scratch.js
 haiku-darwin-x64
 *.swp
+reservation.json
