@@ -11,10 +11,11 @@ $(function() {
     $(".select-instance").append($element)
   }
 
-  $(".stacks .ruby, .stacks .javascript, .stacks .tensorflow").click(function(event) {
+  $(".stacks .ruby, .stacks .javascript, .stacks .tensorflow, .select-instance li").click(function(event) {
     $stack          = $(this)
     let ami         = $stack.data("ami")
-    var instance    = new Instance({ami: ami});
+    let reservation = $stack.data("reservation")
+    var instance    = new Instance({ami: ami, reservation: reservation});
 
     $(".select-stack").hide()
     $(".loading-screen").show()
