@@ -1,7 +1,16 @@
+const app         = require('electron').remote.getGlobal("app")
 const ProgressBar = require('progressbar.js')
 const Instance    = require("./js/instance.js");
+const fs          = require("fs")
 
 $(function() {
+  if(fs.existsSync(app.getAppPath() + "/reservation.json")) {
+    let reservation = JSON.parse(fs.readFileSync(app.getAppPath() + "/reservation.json"))
+    $element = $("<li>" + reservation.ReservationId + "</li>")
+    $element.data("reservation", reservation)
+    $(".select-instance").append($element)
+  }
+
   $(".stacks .ruby, .stacks .javascript, .stacks .tensorflow").click(function(event) {
     $stack          = $(this)
     let ami         = $stack.data("ami")
