@@ -19,7 +19,7 @@
   },
   "scripts": {
     "build-icon": "png2icns images/Logo\\ -\\ ICNS.png && mv icon.icns images/logo.icns",
-    "build-app": "electron-packager . haiku --platform=darwin --overwrite --icon=./images/logo.icns",
+    "build-app": "electron-packager . haiku --platform=darwin --overwrite --icon=./images/logo.icns --ignore='(reservation\\.json|Box-.*\\.pem)'",
     "build": "npm run build-icon; npm run build-app",
     "open": "open haiku-darwin-x64/haiku.app"
   }

@@ -50,12 +50,13 @@ class Instance extends EventEmitter {
   }
 
   findOrCreateKey(callback) {
-    var keyFiles = glob.sync("*.pem");
+    var keyFiles = glob.sync(app.getAppPath() + "/*.pem");
 
     if(keyFiles.length > 0) {
-      var keyName = keyFiles[0].match(/(.+)\.pem/)[1]
-      this.keyName = keyName;
-      callback(keyName);
+      let paths     = keyFiles[0].split("/")
+      this.keyName  = paths[paths.length - 1].match(/(.+)\.pem/)[1]
+
+      callback(this.keyName);
     } else {
       this.createAndSaveKeyPair(callback);
     }
