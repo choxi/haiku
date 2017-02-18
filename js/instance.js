@@ -37,7 +37,7 @@ class Instance extends EventEmitter {
         MaxCount: 1,
         MinCount: 1,
         KeyName: keyName,
-        SecurityGroupIds: ["sg-0a2ea676"]
+        SecurityGroupIds: ["sg-c64bf0a1"]
       }
 
       this.ec2.runInstances(params, function(err, data) {
