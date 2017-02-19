@@ -16,15 +16,16 @@ class Instance extends EventEmitter {
     super()
 
     this.params = params
-    log.info("Creating Instance...");
     this.status = "running"
+    this.ec2    = new AWS.EC2(config.ec2)
+
     this.emit("creating")
-    this.ec2 = new AWS.EC2(config.ec2);
-    this.findOrCreateKey(this.createInstance.bind(this));
+    this.findOrCreateKey(this.createInstance.bind(this))
     return this;
   }
 
   createInstance(keyName) {
+    log.info("Creating Instance...")
     if(this.params.reservation) {
       this.ec2.startInstances({InstanceIds: this.instanceIds(this.params.reservation)}, function(err, data) {
         if(err) log.error(err)
