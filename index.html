@@ -5,6 +5,7 @@
     <title>Haiku</title>
     <link rel="stylesheet" type="text/css" href="./css/application.css">
     <link rel="stylesheet" type="text/css" href="./css/xterm.css">
+    <link rel="stylesheet" type="text/css" href="./css/xterm-overrides.css">
   </head>
   <body>
     <div class="select-stack">
@@ -36,8 +37,7 @@
       </div>
       <p class="loading-status">Creating Instance...</p>
     </div>
-    <div id="terminal">
-    </div>
+    <div class="terminal-wrapper"></div>
     <!-- In Electron, this is the correct way to include jQuery -->
     <script>window.$ = window.jQuery = require('./js/jquery-3.1.1.min.js');</script>
     <script src="./js/xterm.js"></script>

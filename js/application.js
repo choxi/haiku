@@ -46,16 +46,18 @@ $(function() {
       $(".loading-status").text("Connecting...")
     })
 
+    var term = new Terminal({ cursorBlink: true });
+    term.open(document.getElementsByClassName('terminal-wrapper')[0])
+    term.fit()
+
     instance.on("ready", function() {
       outerProgress.animate(1)
       innerProgress.animate(1, function() {
         $(".loading-screen").hide()
-      })
+        $(".terminal-wrapper").show()
+        term.fit();
+      }.bind(this))
     })
-
-    var term = new Terminal({ cursorBlink: true });
-    term.open(document.getElementById('#terminal'));
-    term.fit();
 
     instance.waitUntilRunning(function(keyPath, ipAddress) {
       var sshLogin        = "ec2-user@" + ipAddress;
