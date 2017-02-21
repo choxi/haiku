@@ -4,6 +4,7 @@ const BrowserWindow   = electron.BrowserWindow
 const path            = require('path')
 const url             = require('url')
 const autoUpdater     = require("electron-updater").autoUpdater
+const log             = require("electron-log")
 
 global.app = app
 
@@ -59,6 +60,10 @@ app.on('activate', function () {
     createWindow()
   }
 })
+
+autoUpdater.logger = log
+autoUpdater.logger.transports.file.level = 'info'
+log.info('App starting...')
 
 autoUpdater.on('checking-for-update', () => {
   console.log('Checking for update...');

@@ -2,7 +2,7 @@
   "name": "Haiku",
   "description": "A simple cloud IDE",
   "author": "Roshan Choxi",
-  "version": "0.0.2",
+  "version": "0.0.6",
   "dependencies": {
     "pty": "",
     "ansi-to-html": "",
