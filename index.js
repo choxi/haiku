@@ -3,6 +3,7 @@ const app             = electron.app
 const BrowserWindow   = electron.BrowserWindow
 const path            = require('path')
 const url             = require('url')
+const autoUpdater     = require("electron-updater").autoUpdater
 
 global.app = app
 
@@ -58,3 +59,37 @@ app.on('activate', function () {
     createWindow()
   }
 })
+
+autoUpdater.on('checking-for-update', () => {
+  console.log('Checking for update...');
+})
+
+autoUpdater.on('update-available', (ev, info) => {
+  console.log('Update available.');
+})
+
+autoUpdater.on('update-not-available', (ev, info) => {
+  console.log('Update not available.');
+})
+
+autoUpdater.on('error', (ev, err) => {
+  console.log('Error in auto-updater.');
+})
+
+autoUpdater.on('download-progress', (ev, progressObj) => {
+  console.log('Download progress...');
+})
+
+autoUpdater.on('update-downloaded', (ev, info) => {
+  console.log('Update downloaded.  Will quit and install in 5 seconds.');
+
+  // Wait 5 seconds, then quit and install
+  setTimeout(function() {
+    autoUpdater.quitAndInstall();  
+  }, 5000)
+})
+
+// Wait a second for the window to exist before checking for updates.
+setTimeout(function() {
+  autoUpdater.checkForUpdates()  
+}, 1000);
