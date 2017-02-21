@@ -5,3 +5,5 @@ scratch.js
 haiku-darwin-x64
 *.swp
 reservation.json
+build/
+dist/

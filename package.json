@@ -1,8 +1,9 @@
 {
   "name": "Haiku",
+  "description": "A simple cloud IDE",
+  "author": "Roshan Choxi",
   "version": "0.0.0",
   "dependencies": {
-    "electron": "1.4.15",
     "pty": "",
     "ansi-to-html": "",
     "string_decoder": "",
@@ -11,16 +12,28 @@
     "glob": "",
     "simple-ssh": "",
     "electron-log": "",
+    "electron-updater": "",
     "progressbar.js": "1.0.1"
   },
+  "build": {
+    "appId": "com.electron.haiku",
+    "publish": [{
+      "provider": "github",
+      "owner": "choxi",
+      "repo": "haiku"
+    }]
+  },
   "devDependencies": {
+    "electron": "1.4.15",
     "electron-packager": "^8.5.1",
+    "electron-builder": "",
     "png2icns": "0.0.1"
   },
   "scripts": {
     "build-icon": "png2icns images/Logo\\ -\\ ICNS.png && mv icon.icns images/logo.icns",
     "build-app": "electron-packager . --platform=darwin --overwrite --icon=./images/logo.icns --ignore='(reservation\\.json|Box-.*\\.pem)'",
     "build": "npm run build-icon; npm run build-app",
-    "open": "open haiku-darwin-x64/haiku.app"
+    "open": "open haiku-darwin-x64/haiku.app",
+    "publish": "node_modules/.bin/build --mac -p always"
   }
 }
