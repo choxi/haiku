@@ -51,7 +51,7 @@ class Instance extends EventEmitter {
   }
 
   findOrCreateKey(callback) {
-    var keyFiles = glob.sync(app.getAppPath() + "/*.pem");
+    var keyFiles = glob.sync(this.appDataPath() + "/*.pem");
 
     if(keyFiles.length > 0) {
       let paths     = keyFiles[0].split("/")
@@ -65,12 +65,12 @@ class Instance extends EventEmitter {
 
   createAndSaveKeyPair(callback) {
     var keyId   =  uuid();
-    var keyName = "Box-" + keyId;
+    var keyName = "Haiku-" + keyId;
 
     this.ec2.createKeyPair({ KeyName: keyName }, function(err, data) {
       if (err) log.error(err, err.stack);
       else {
-        fs.writeFile(app.getAppPath() + "/" + keyName + ".pem", data.KeyMaterial, {mode: "400"}, function(err) {
+        fs.writeFile(this.appDataPath() + "/" + keyName + ".pem", data.KeyMaterial, {mode: "400"}, function(err) {
           if(err) return log.error(err);
           this.keyName = keyName;
           callback(keyName);
@@ -83,7 +83,7 @@ class Instance extends EventEmitter {
     log.info("Stopping Instance")
     this.ec2.stopInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
       if(err) log.error(err)
-      fs.writeFileSync(app.getAppPath() + "/reservation.json", JSON.stringify(this.reservation))
+      fs.writeFileSync(this.appDataPath() + "/reservation.json", JSON.stringify(this.reservation))
 
       this.status = "stopped"
       callback();
@@ -134,7 +134,11 @@ class Instance extends EventEmitter {
   }
 
   keyPath() {
-    return app.getAppPath() + "/" + this.keyName + ".pem";
+    return this.appDataPath() + "/" + this.keyName + ".pem";
+  }
+  
+  appDataPath() {
+    return app.getPath("appData") + "/Haiku"
   }
 
   pollSSHConnection(callback) {

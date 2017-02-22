@@ -4,8 +4,8 @@ const Instance    = require("./js/instance.js");
 const fs          = require("fs")
 
 $(function() {
-  if(fs.existsSync(app.getAppPath() + "/reservation.json")) {
-    let reservation = JSON.parse(fs.readFileSync(app.getAppPath() + "/reservation.json"))
+  if(fs.existsSync(app.getPath("appData") + "/Haiku/reservation.json")) {
+    let reservation = JSON.parse(fs.readFileSync(app.getPath("appData") + "/Haiku/reservation.json"))
     $element = $("<li>" + reservation.ReservationId + "</li>")
     $element.data("reservation", reservation)
     $(".select-instance").append($element)
