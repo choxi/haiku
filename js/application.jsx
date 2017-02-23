@@ -4,12 +4,7 @@ const Instance    = require("./js/instance.js");
 const fs          = require("fs")
 const React       = require("react")
 const ReactDOM    = require("react-dom")
-
-class OpenMenu extends React.Component {
-  render() {
-    return <h1> Hello, world! </h1>
-  }
-}
+const OpenMenu    = require("./js/open-menu.jsx")
 
 ReactDOM.render(
   <OpenMenu />,
