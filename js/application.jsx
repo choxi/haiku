@@ -20,7 +20,7 @@ $(function() {
   }
 
   $(".stacks .ruby, .stacks .javascript, .stacks .tensorflow, .select-instance li").click(function(event) {
-    $stack          = $(this)
+    let $stack      = $(this)
     let ami         = $stack.data("ami")
     let reservation = $stack.data("reservation")
     var instance    = new Instance({ami: ami, reservation: reservation});
