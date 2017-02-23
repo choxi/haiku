@@ -7,13 +7,13 @@ const ReactDOM    = require("react-dom")
 
 ReactDOM.render(
   React.createElement("h1", null, "Hello, world!"),
-  document.getElementById('root')
+  document.getElementById('open-menu')
 )
 
 $(function() {
   if(fs.existsSync(app.getPath("appData") + "/Haiku/reservation.json")) {
     let reservation = JSON.parse(fs.readFileSync(app.getPath("appData") + "/Haiku/reservation.json"))
-    $element = $("<li>" + reservation.ReservationId + "</li>")
+    let $element = $("<li>" + reservation.ReservationId + "</li>")
     $element.data("reservation", reservation)
     $(".select-instance").append($element)
   }
