@@ -1,7 +1,5 @@
-const app         = require('electron').remote.getGlobal("app")
 const ProgressBar = require('progressbar.js')
 const Instance    = require("./js/instance.js");
-const fs          = require("fs")
 const React       = require("react")
 const ReactDOM    = require("react-dom")
 const OpenMenu    = require("./js/open-menu.jsx")
@@ -84,12 +82,3 @@ ReactDOM.render(
   <OpenMenu onSelect={createInstance} />,
   document.getElementById('open-menu')
 )
-
-$(function() {
-  if(fs.existsSync(app.getPath("appData") + "/Haiku/reservation.json")) {
-    let reservation = JSON.parse(fs.readFileSync(app.getPath("appData") + "/Haiku/reservation.json"))
-    let $element = $("<li>" + reservation.ReservationId + "</li>")
-    $element.data("reservation", reservation)
-    $(".select-instance").append($element)
-  }
-})
