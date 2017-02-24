@@ -2,18 +2,14 @@ const React       = require("react")
 const ReactDOM    = require("react-dom")
 const fs          = require("fs")
 const app         = require('electron').remote.getGlobal("app")
+const Reservation = require("./reservation.js")
 
 class OpenMenu extends React.Component {
   constructor() {
     super()
-    this.select 		= this.select.bind(this)
-    this.create 		= this.create.bind(this)
+    this.select 		      = this.select.bind(this)
+    this.create 		      = this.create.bind(this)
     this.selectedClasses  = this.selectedClasses.bind(this)
-
-    let path = app.getPath("appData") + "/Haiku/reservations.json"
-    if(fs.existsSync(path)) {
-      this.reservations = JSON.parse(fs.readFileSync(path))
-    }
 
 		this.state = { 
 			selection: {
@@ -30,7 +26,7 @@ class OpenMenu extends React.Component {
     let reservation
 
     if(!!reservationId) {
-      reservation = this.reservations[reservationId]
+      reservation = Reservation.find(reservationId)
     }
 
     this.setState({selection: {ami: ami, reservation: reservationId}})
@@ -50,7 +46,7 @@ class OpenMenu extends React.Component {
     let params = {
       name: this.refs.name.value,
       ami: this.state.selection.ami,
-      reservation: this.reservations[this.state.selection.reservation]
+      reservation: Reservation.find(this.state.selection.reservation)
     }
 
     this.props.onSelect(params)
@@ -58,8 +54,10 @@ class OpenMenu extends React.Component {
   
   render() {
     let selectInstance
-    if(this.reservations) {
-      let mappedReservations = Object.keys(this.reservations).map(function (key) {
+    let reservations = Reservation.all()
+
+    if(Object.keys(reservations).length !== 0) {
+      let mappedReservations = Object.keys(reservations).map(function (key) {
         return (<li className={this.selectedClasses(key)} onClick={this.select} data-reservation={key} key={key}>{key}</li>)
       }.bind(this))
 
