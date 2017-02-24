@@ -21,7 +21,9 @@ class OpenMenu extends React.Component {
       r = this.reservation
     }
 
-    this.props.onSelect({ami: ami, reservation: r})
+    if(!!ami || !!r) {
+      this.props.onSelect({ami: ami, reservation: r})
+    }
   }
   
   render() {
