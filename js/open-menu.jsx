@@ -33,13 +33,13 @@ class OpenMenu extends React.Component {
       reservation = this.reservations[reservationId]
     }
 
-    this.setState({selection: {ami: ami, reservation: reservation}})
+    this.setState({selection: {ami: ami, reservation: reservationId}})
   }
 
   selectedClasses(value) {
 		if(!!this.state.selection.ami && (value === this.state.selection.ami)) {
 			return "selected"
-		} else if(!!this.state.selection.reservation && (value === this.state.selection.reservation.ReservationId)) {
+		} else if(!!this.state.selection.reservation && (value === this.state.selection.reservation)) {
       return "selected"
     } else {
       return ""
@@ -50,7 +50,7 @@ class OpenMenu extends React.Component {
     let params = {
       name: this.refs.name.value,
       ami: this.state.selection.ami,
-      reservation: this.state.selection.reservation
+      reservation: this.reservations[this.state.selection.reservation]
     }
 
     this.props.onSelect(params)
