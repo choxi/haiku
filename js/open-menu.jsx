@@ -10,7 +10,7 @@ class OpenMenu extends React.Component {
     this.select 		      = this.select.bind(this)
     this.create 		      = this.create.bind(this)
     this.selectedClasses  = this.selectedClasses.bind(this)
-    this.disableButton    = this.disableButton.bind(this)
+    this.disableCreateButton    = this.disableCreateButton.bind(this)
 
 		this.state = { 
 			selection: {
@@ -21,16 +21,10 @@ class OpenMenu extends React.Component {
   }
 
   select(event) {
-    let target        = event.currentTarget
-    let ami           = target.getAttribute("data-ami")
-    let reservationId = target.getAttribute("data-reservation")
-    let reservation
+    let target = event.currentTarget
+    let ami    = target.getAttribute("data-ami")
 
-    if(!!reservationId) {
-      reservation = Reservation.find(reservationId)
-    }
-
-    this.setState({selection: {ami: ami, reservation: reservationId}})
+    this.setState({selection: {ami: ami}})
   }
 
   selectedClasses(value) {
@@ -63,8 +57,8 @@ class OpenMenu extends React.Component {
     this.props.onSelect(params)
   }
 
-  disableButton() {
-    return (!this.state.selection.ami && !this.state.selection.reservation)
+  disableCreateButton() {
+    return !this.state.selection.ami
   }
   
   render() {
@@ -73,7 +67,7 @@ class OpenMenu extends React.Component {
 
     if(Object.keys(reservations).length !== 0) {
       let mappedReservations = Object.keys(reservations).map(function (key) {
-        return (<tr className={this.selectedClasses(key)} onClick={this.select} data-reservation={key} key={key}><td>{key}</td><td>Feb 24, 2017</td></tr>)
+        return (<tr className={this.selectedClasses(key)} data-reservation={key} key={key}><td>{key}</td><td>Feb 24, 2017</td></tr>)
       }.bind(this))
 
       selectInstance = (
@@ -112,7 +106,7 @@ class OpenMenu extends React.Component {
               <p> Tensorflow </p>
             </div>
           </div>
-          <button disabled={this.disableButton()} onClick={this.create} >Create</button>
+          <button disabled={this.disableCreateButton()} onClick={this.create} >Create</button>
         </div>
       </div>
     )
