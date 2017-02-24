@@ -10,6 +10,7 @@ class OpenMenu extends React.Component {
     this.select 		      = this.select.bind(this)
     this.create 		      = this.create.bind(this)
     this.selectedClasses  = this.selectedClasses.bind(this)
+    this.disableButton    = this.disableButton.bind(this)
 
 		this.state = { 
 			selection: {
@@ -61,6 +62,10 @@ class OpenMenu extends React.Component {
 
     this.props.onSelect(params)
   }
+
+  disableButton() {
+    return (!this.state.selection.ami && !this.state.selection.reservation)
+  }
   
   render() {
     let selectInstance
@@ -94,7 +99,7 @@ class OpenMenu extends React.Component {
         </div>
         <label htmlFor="name">Name</label>
         <input name="name" ref="name" type="text" maxLength="100" />
-        <button onClick={this.create} >Create</button>
+        <button disabled={this.disableButton()} onClick={this.create} >Create</button>
       </div>
     )
   }
