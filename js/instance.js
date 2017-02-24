@@ -83,7 +83,12 @@ class Instance extends EventEmitter {
     log.info("Stopping Instance")
     this.ec2.stopInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
       if(err) log.error(err)
-      fs.writeFileSync(this.appDataPath() + "/reservation.json", JSON.stringify(this.reservation))
+
+      let reservations = {}
+      let path = app.getPath("appData") + "/Haiku/reservations.json"
+      if(fs.existsSync(path)) reservations = JSON.parse(fs.readFileSync(path))
+      reservations[this.reservation.ReservationId] = this.reservation
+      fs.writeFileSync(path, JSON.stringify(reservations))
 
       this.status = "stopped"
       callback();
