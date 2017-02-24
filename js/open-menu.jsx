@@ -7,6 +7,7 @@ class OpenMenu extends React.Component {
   constructor() {
     super()
     this.select = this.select.bind(this)
+    this.create = this.create.bind(this)
 
     let path = app.getPath("appData") + "/Haiku/reservations.json"
     if(fs.existsSync(path)) {
@@ -15,16 +16,20 @@ class OpenMenu extends React.Component {
   }
 
   select(event) {
-    let ami = event.target.getAttribute("data-ami")
-    let r
+    let target        = event.currentTarget
+    let ami           = target.getAttribute("data-ami")
+    let reservationId = target.getAttribute("data-reservation")
+    let reservation
 
-    if(event.target.getAttribute("data-reservation")) {
-      r = this.reservation
+    if(!!reservationId) {
+      reservation = this.reservations[reservationId]
     }
 
-    if(!!ami || !!r) {
-      this.props.onSelect({ami: ami, reservation: r})
-    }
+    this.setState({selection: {ami: ami, reservation: reservation}})
+  }
+
+  create(event) {
+    debugger
   }
   
   render() {
@@ -55,6 +60,9 @@ class OpenMenu extends React.Component {
             <p> Tensorflow </p>
           </div>
         </div>
+        <label htmlFor="name">Name</label>
+        <input name="name" type="text" maxLength="100" />
+        <button onClick={this.create} >Create</button>
       </div>
     )
   }
