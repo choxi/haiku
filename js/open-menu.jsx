@@ -8,8 +8,9 @@ class OpenMenu extends React.Component {
     super()
     this.select = this.select.bind(this)
 
-    if(fs.existsSync(app.getPath("appData") + "/Haiku/reservation.json")) {
-      this.reservation = JSON.parse(fs.readFileSync(app.getPath("appData") + "/Haiku/reservation.json"))
+    let path = app.getPath("appData") + "/Haiku/reservations.json"
+    if(fs.existsSync(path)) {
+      this.reservations = JSON.parse(fs.readFileSync(path))
     }
   }
 
@@ -28,13 +29,12 @@ class OpenMenu extends React.Component {
   
   render() {
     let selectInstance
+    if(this.reservations) {
+      let mappedReservations = Object.keys(this.reservations).map(function (key) {
+        return (<li onClick={this.select} data-reservation={key} key={key}>{key}</li>)
+      }.bind(this))
 
-    if(this.reservation) {
-      selectInstance = (
-        <ul className="select-instance">
-          <li onClick={this.select} data-reservation={this.reservation.ReservationId} >{this.reservation.ReservationId}</li>
-        </ul>
-      )
+      selectInstance = <ul className="select-instance"> { mappedReservations } </ul>
     }
 
     return (
