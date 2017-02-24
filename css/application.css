@@ -34,7 +34,7 @@ html, body {
   margin: 0 30px
 }
 
-.select-stack .ruby:hover, .select-stack .javascript:hover, .select-stack .tensorflow:hover {
+.select-stack .selected {
   border-color: #53D9E7;
 }
 

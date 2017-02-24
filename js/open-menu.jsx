@@ -6,12 +6,20 @@ const app         = require('electron').remote.getGlobal("app")
 class OpenMenu extends React.Component {
   constructor() {
     super()
-    this.select = this.select.bind(this)
-    this.create = this.create.bind(this)
+    this.select 		= this.select.bind(this)
+    this.create 		= this.create.bind(this)
+    this.selectedClasses  = this.selectedClasses.bind(this)
 
     let path = app.getPath("appData") + "/Haiku/reservations.json"
     if(fs.existsSync(path)) {
       this.reservations = JSON.parse(fs.readFileSync(path))
+    }
+
+		this.state = { 
+			selection: {
+				ami: null,
+				reservation: null
+			}
     }
   }
 
@@ -28,6 +36,16 @@ class OpenMenu extends React.Component {
     this.setState({selection: {ami: ami, reservation: reservation}})
   }
 
+  selectedClasses(value) {
+		if(!!this.state.selection.ami && (value === this.state.selection.ami)) {
+			return "selected"
+		} else if(!!this.state.selection.reservation && (value === this.state.selection.reservation.ReservationId)) {
+      return "selected"
+    } else {
+      return ""
+    }
+  }
+
   create(event) {
     let params = {
       name: this.refs.name.value,
@@ -42,7 +60,7 @@ class OpenMenu extends React.Component {
     let selectInstance
     if(this.reservations) {
       let mappedReservations = Object.keys(this.reservations).map(function (key) {
-        return (<li onClick={this.select} data-reservation={key} key={key}>{key}</li>)
+        return (<li className={this.selectedClasses(key)} onClick={this.select} data-reservation={key} key={key}>{key}</li>)
       }.bind(this))
 
       selectInstance = <ul className="select-instance"> { mappedReservations } </ul>
@@ -53,15 +71,15 @@ class OpenMenu extends React.Component {
         {selectInstance}
         <h3> Select a Stack </h3>
         <div className="stacks">
-          <div className="ruby" data-ami="ami-165a0876" onClick={this.select}>
+          <div className={"ruby " + this.selectedClasses("ami-165a0876") } data-ami="ami-165a0876" onClick={this.select}>
             <img src="./images/icon-ruby.png" />
             <p> Ruby </p>
           </div>
-          <div className="javascript" data-ami="ami-165a0876" onClick={this.select}>
+          <div className={"javascript " + this.selectedClasses("ami-165a0876")} data-ami="ami-165a0876" onClick={this.select}>
             <img src="./images/icon-javascript.png" />
             <p> Node </p>
           </div>
-          <div className="tensorflow" data-ami="ami-165a0876" onClick={this.select}>
+          <div className={"tensorflow " + this.selectedClasses("ami-165a0876")} data-ami="ami-165a0876" onClick={this.select}>
             <img src="./images/icon-tensorflow.png" />
             <p> Tensorflow </p>
           </div>
