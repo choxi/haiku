@@ -28,6 +28,7 @@ function createWindow () {
   }))
 
   // Open the DevTools.
+  BrowserWindow.addDevToolsExtension("/Users/Choxi/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/2.0.12_0")
   mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
