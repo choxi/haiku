@@ -29,7 +29,12 @@ class OpenMenu extends React.Component {
   }
 
   create(event) {
-    this.props.onSelect(this.state.selection)
+    let params = {
+      name: this.refs.name.value,
+      selection: this.state.selection
+    }
+
+    this.props.onSelect(params)
   }
   
   render() {
@@ -61,7 +66,7 @@ class OpenMenu extends React.Component {
           </div>
         </div>
         <label htmlFor="name">Name</label>
-        <input name="name" type="text" maxLength="100" />
+        <input name="name" ref="name" type="text" maxLength="100" />
         <button onClick={this.create} >Create</button>
       </div>
     )
