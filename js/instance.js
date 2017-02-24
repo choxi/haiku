@@ -32,7 +32,7 @@ class Instance extends EventEmitter {
         this.reservation = this.params.reservation
       }.bind(this))
     } else {
-      var params = {
+      let p = {
         ImageId: this.params.ami,
         InstanceType: "t2.micro",
         MaxCount: 1,
@@ -41,7 +41,7 @@ class Instance extends EventEmitter {
         SecurityGroupIds: ["sg-c64bf0a1"]
       }
 
-      this.ec2.runInstances(params, function(err, data) {
+      this.ec2.runInstances(p, function(err, data) {
         if (err) log.error(err, err.stack); // an error occurred
         else {
           this.reservation = data;
@@ -87,7 +87,7 @@ class Instance extends EventEmitter {
       let reservations = {}
       let path = app.getPath("appData") + "/Haiku/reservations.json"
       if(fs.existsSync(path)) reservations = JSON.parse(fs.readFileSync(path))
-      reservations[this.reservation.ReservationId] = this.reservation
+      reservations[this.params.name] = this.reservation
       fs.writeFileSync(path, JSON.stringify(reservations))
 
       this.status = "stopped"
