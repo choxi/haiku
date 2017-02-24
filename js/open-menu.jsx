@@ -43,10 +43,20 @@ class OpenMenu extends React.Component {
   }
 
   create(event) {
-    let params = {
-      name: this.refs.name.value,
-      ami: this.state.selection.ami,
-      reservation: Reservation.find(this.state.selection.reservation)
+    let params      = {}
+    let ami         = this.state.selection.ami
+    let reservation = this.state.selection.reservation
+
+    if(!!ami) {
+      params = { 
+        name: this.refs.name.value, 
+        ami: ami 
+      }
+    } else if(!!reservation) {
+      params = {
+        name: reservation,
+        reservation: Reservation.find(reservation)
+      }
     }
 
     this.props.onSelect(params)
