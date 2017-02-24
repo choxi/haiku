@@ -29,7 +29,7 @@ class OpenMenu extends React.Component {
   }
 
   create(event) {
-    debugger
+    this.props.onSelect(this.state.selection)
   }
   
   render() {
