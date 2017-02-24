@@ -73,12 +73,12 @@ class OpenMenu extends React.Component {
 
     if(Object.keys(reservations).length !== 0) {
       let mappedReservations = Object.keys(reservations).map(function (key) {
-        return (<tr className={this.selectedClasses(key)} onClick={this.select} data-reservation={key} key={key}><td>{key}</td></tr>)
+        return (<tr className={this.selectedClasses(key)} onClick={this.select} data-reservation={key} key={key}><td>{key}</td><td>Feb 24, 2017</td></tr>)
       }.bind(this))
 
       selectInstance = (
         <table className="select-instance">
-          <tr><th>Name</th></tr>
+          <tr><th>Name</th><th>Created</th></tr>
           { mappedReservations } 
         </table>
       )
@@ -93,7 +93,12 @@ class OpenMenu extends React.Component {
         </div>
         <div className="new-instance">
           <h3> Create a New Instance </h3>
+          <p>
+            <label htmlFor="name">Name</label>
+            <input name="name" ref="name" type="text" maxLength="100" />
+          </p>
           <div className="stacks">
+            <p><label>Stack</label></p>
             <div className={"ruby " + this.selectedClasses("ami-165a0876") } data-ami="ami-165a0876" onClick={this.select}>
               <img src="./images/icon-ruby.png" />
               <p> Ruby </p>
@@ -107,8 +112,6 @@ class OpenMenu extends React.Component {
               <p> Tensorflow </p>
             </div>
           </div>
-          <label htmlFor="name">Name</label>
-          <input name="name" ref="name" type="text" maxLength="100" />
           <button disabled={this.disableButton()} onClick={this.create} >Create</button>
         </div>
       </div>
