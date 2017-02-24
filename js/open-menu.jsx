@@ -73,33 +73,44 @@ class OpenMenu extends React.Component {
 
     if(Object.keys(reservations).length !== 0) {
       let mappedReservations = Object.keys(reservations).map(function (key) {
-        return (<li className={this.selectedClasses(key)} onClick={this.select} data-reservation={key} key={key}>{key}</li>)
+        return (<tr className={this.selectedClasses(key)} onClick={this.select} data-reservation={key} key={key}><td>{key}</td></tr>)
       }.bind(this))
 
-      selectInstance = <ul className="select-instance"> { mappedReservations } </ul>
+      selectInstance = (
+        <table className="select-instance">
+          <tr><th>Name</th></tr>
+          { mappedReservations } 
+        </table>
+      )
     }
 
     return (
       <div className="select-stack">
-        {selectInstance}
-        <h3> Select a Stack </h3>
-        <div className="stacks">
-          <div className={"ruby " + this.selectedClasses("ami-165a0876") } data-ami="ami-165a0876" onClick={this.select}>
-            <img src="./images/icon-ruby.png" />
-            <p> Ruby </p>
-          </div>
-          <div className={"javascript " + this.selectedClasses("ami-165a0876")} data-ami="ami-165a0876" onClick={this.select}>
-            <img src="./images/icon-javascript.png" />
-            <p> Node </p>
-          </div>
-          <div className={"tensorflow " + this.selectedClasses("ami-165a0876")} data-ami="ami-165a0876" onClick={this.select}>
-            <img src="./images/icon-tensorflow.png" />
-            <p> Tensorflow </p>
-          </div>
+        <div className="open-instance">
+          <h3>Open a Saved Instance</h3>
+          {selectInstance}
+          <button>Open</button>
         </div>
-        <label htmlFor="name">Name</label>
-        <input name="name" ref="name" type="text" maxLength="100" />
-        <button disabled={this.disableButton()} onClick={this.create} >Create</button>
+        <div className="new-instance">
+          <h3> Create a New Instance </h3>
+          <div className="stacks">
+            <div className={"ruby " + this.selectedClasses("ami-165a0876") } data-ami="ami-165a0876" onClick={this.select}>
+              <img src="./images/icon-ruby.png" />
+              <p> Ruby </p>
+            </div>
+            <div className={"javascript " + this.selectedClasses("ami-165a0876")} data-ami="ami-165a0876" onClick={this.select}>
+              <img src="./images/icon-javascript.png" />
+              <p> Node </p>
+            </div>
+            <div className={"tensorflow " + this.selectedClasses("ami-165a0876")} data-ami="ami-165a0876" onClick={this.select}>
+              <img src="./images/icon-tensorflow.png" />
+              <p> Tensorflow </p>
+            </div>
+          </div>
+          <label htmlFor="name">Name</label>
+          <input name="name" ref="name" type="text" maxLength="100" />
+          <button disabled={this.disableButton()} onClick={this.create} >Create</button>
+        </div>
       </div>
     )
   }

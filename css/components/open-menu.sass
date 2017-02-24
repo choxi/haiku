@@ -1,9 +1,33 @@
 #open-menu
   height: 100%
-  ul
-    margin: 0
-    li.selected
-      color: white
+  padding: 10px
+  button
+    padding: 10px 20px
+    font-weight: bold
+    border: none 
+    border-radius: 5px
+    cursor: pointer
+    color: #666
+    background: white
+    &:disabled
+      background: #AAA 
+  .open-instance, .new-instance
+    padding: 10px
+  .open-instance
+    table
+      font-size: 12px
+      width: 95%
+    th
+      text-align: left
+    tr
+      &:hover
+        background-color: white
+        cursor: pointer
+      &:first-of-type:hover
+        background-color: transparent 
+        cursor: default
+      &.selected
+        background-color: white
   .select-stack
 		height: 100%
 		width: 100%
@@ -33,9 +57,8 @@
 		p
 			margin-top: 35px
 		h3
-			text-align: center
 			text-transform: uppercase
-			padding-top: 80px
+      padding: 10px
 			margin-top: 0
 		.javascript img, .tensorflow img
 			width: 40%
