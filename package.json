@@ -14,7 +14,7 @@
     "simple-ssh": "",
     "electron-log": "",
     "electron-updater": "",
-    "electron-compiler": "",
+    "electron-compile": "",
     "progressbar.js": "1.0.1",
     "react": "",
     "react-dom": ""
