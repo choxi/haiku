@@ -1,5 +1,5 @@
-const path  = require('path')
-let appRoot = path.join(__dirname, '.')
+var path = require('path');
+var electronCompile = require('electron-compile');
 
-require('electron-compile').init(appRoot, require.resolve('./index'));
-
+let initScript = path.resolve(__dirname, 'index.js');
+electronCompile.init(__dirname, initScript);

@@ -5,21 +5,19 @@
   "version": "0.0.3",
   "main": "main.js",
   "dependencies": {
-    "pty": "",
     "ansi-to-html": "",
-    "string_decoder": "",
     "aws-sdk": "",
-    "uuid": "",
-    "glob": "",
-    "simple-ssh": "",
+    "electron-compile": "^6.1.2",
     "electron-log": "",
     "electron-updater": "",
-    "electron-compile": "",
-    "electron-compiler": "",
-    "electron-prebuilt-compile": "^1.4.15",
+    "glob": "",
     "progressbar.js": "1.0.1",
+    "pty": "",
     "react": "",
-    "react-dom": ""
+    "react-dom": "",
+    "simple-ssh": "",
+    "string_decoder": "",
+    "uuid": ""
   },
   "build": {
     "appId": "com.electron.haiku",
@@ -32,8 +30,11 @@
     ]
   },
   "devDependencies": {
-    "electron": "1.4.15",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-es2016": "^6.22.0",
+    "electron": "^1.4.15",
     "electron-builder": "",
+    "electron-compilers": "^5.5.1",
     "electron-packager": "^8.5.1",
     "png2icns": "0.0.1"
   },
