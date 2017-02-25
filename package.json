@@ -15,22 +15,26 @@
     "electron-log": "",
     "electron-updater": "",
     "electron-compile": "",
+    "electron-compiler": "",
     "progressbar.js": "1.0.1",
     "react": "",
     "react-dom": ""
   },
   "build": {
     "appId": "com.electron.haiku",
-    "publish": [{
-      "provider": "github",
-      "owner": "choxi",
-      "repo": "haiku"
-    }]
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "choxi",
+        "repo": "haiku"
+      }
+    ]
   },
   "devDependencies": {
     "electron": "1.4.15",
-    "electron-packager": "^8.5.1",
     "electron-builder": "",
+    "electron-packager": "^8.5.1",
+    "electron-prebuilt-compile": "^1.4.15",
     "png2icns": "0.0.1"
   },
   "scripts": {
