@@ -12,6 +12,7 @@ class OpenMenu extends React.Component {
     this.selectedClasses      = this.selectedClasses.bind(this)
     this.disableCreateButton  = this.disableCreateButton.bind(this)
     this.disableOpenButton    = this.disableOpenButton.bind(this)
+    this.updateName           = this.updateName.bind(this)
 
 		this.state = { 
 			selection: {
@@ -51,7 +52,7 @@ class OpenMenu extends React.Component {
 
     if(!!ami) {
       params = { 
-        name: this.refs.name.value, 
+        name: this.state.name, 
         ami: ami 
       }
     } else if(!!reservation) {
@@ -63,9 +64,13 @@ class OpenMenu extends React.Component {
 
     this.props.onSelect(params)
   }
+  
+  updateName(event) {
+    this.setState({name: event.target.value})
+  }
 
   disableCreateButton() {
-    return !this.state.selection.ami
+    return !this.state.selection.ami || !this.state.name || this.state.name === ""
   }
 
   disableOpenButton() {
@@ -82,25 +87,28 @@ class OpenMenu extends React.Component {
       }.bind(this))
 
       selectInstance = (
-        <table className="select-instance">
-          <tr><th>Name</th><th>Created</th></tr>
-          { mappedReservations } 
-        </table>
+        <div className="open-instance">
+          <h3>Open a Saved Instance</h3>
+          {selectInstance}
+
+          <table className="select-instance">
+            <tr><th>Name</th><th>Created</th></tr>
+            { mappedReservations } 
+          </table>
+
+          <button disabled={this.disableOpenButton()} onClick={this.create}>Open</button>
+        </div>
       )
     }
 
     return (
       <div className="select-stack">
-        <div className="open-instance">
-          <h3>Open a Saved Instance</h3>
-          {selectInstance}
-          <button disabled={this.disableOpenButton()} onClick={this.create}>Open</button>
-        </div>
+        {selectInstance}
         <div className="new-instance">
           <h3> Create a New Instance </h3>
           <p>
             <label htmlFor="name">Name</label>
-            <input name="name" ref="name" type="text" maxLength="100" />
+            <input name="name" ref="name" type="text" maxLength="100" onChange={this.updateName} />
           </p>
           <div className="stacks">
             <p><label>Stack</label></p>
