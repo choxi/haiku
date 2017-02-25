@@ -14,7 +14,9 @@
     "simple-ssh": "",
     "electron-log": "",
     "electron-updater": "",
-    "progressbar.js": "1.0.1"
+    "progressbar.js": "1.0.1",
+    "react": "",
+    "react-dom": ""
   },
   "build": {
     "appId": "com.electron.haiku",
