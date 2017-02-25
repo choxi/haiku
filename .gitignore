@@ -7,3 +7,4 @@ haiku-darwin-x64
 reservation.json
 build/
 dist/
+.cache/
