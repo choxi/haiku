@@ -7,10 +7,11 @@ const Reservation = require("./reservation.js")
 class OpenMenu extends React.Component {
   constructor() {
     super()
-    this.select 		      = this.select.bind(this)
-    this.create 		      = this.create.bind(this)
-    this.selectedClasses  = this.selectedClasses.bind(this)
-    this.disableCreateButton    = this.disableCreateButton.bind(this)
+    this.select 		          = this.select.bind(this)
+    this.create 		          = this.create.bind(this)
+    this.selectedClasses      = this.selectedClasses.bind(this)
+    this.disableCreateButton  = this.disableCreateButton.bind(this)
+    this.disableOpenButton    = this.disableOpenButton.bind(this)
 
 		this.state = { 
 			selection: {
@@ -21,10 +22,16 @@ class OpenMenu extends React.Component {
   }
 
   select(event) {
-    let target = event.currentTarget
-    let ami    = target.getAttribute("data-ami")
+    let target        = event.currentTarget
+    let ami           = target.getAttribute("data-ami")
+    let reservationId = target.getAttribute("data-reservation")
+    let reservation
 
-    this.setState({selection: {ami: ami}})
+    if(!!reservationId) {
+      reservation = Reservation.find(reservationId)
+    }
+
+    this.setState({selection: {ami: ami, reservation: reservationId}})
   }
 
   selectedClasses(value) {
@@ -60,6 +67,10 @@ class OpenMenu extends React.Component {
   disableCreateButton() {
     return !this.state.selection.ami
   }
+
+  disableOpenButton() {
+    return !this.state.selection.reservation
+  }
   
   render() {
     let selectInstance
@@ -67,7 +78,7 @@ class OpenMenu extends React.Component {
 
     if(Object.keys(reservations).length !== 0) {
       let mappedReservations = Object.keys(reservations).map(function (key) {
-        return (<tr className={this.selectedClasses(key)} data-reservation={key} key={key}><td>{key}</td><td>Feb 24, 2017</td></tr>)
+        return (<tr className={this.selectedClasses(key)} onClick={this.select} data-reservation={key} key={key}><td>{key}</td><td>Feb 24, 2017</td></tr>)
       }.bind(this))
 
       selectInstance = (
@@ -83,7 +94,7 @@ class OpenMenu extends React.Component {
         <div className="open-instance">
           <h3>Open a Saved Instance</h3>
           {selectInstance}
-          <button>Open</button>
+          <button disabled={this.disableOpenButton()} onClick={this.create}>Open</button>
         </div>
         <div className="new-instance">
           <h3> Create a New Instance </h3>
