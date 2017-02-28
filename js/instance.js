@@ -28,10 +28,10 @@ class Instance extends EventEmitter {
   createInstance(keyName) {
     log.info("Creating Instance...")
     if(this.params.reservation) {
-      this.ec2.startInstances({InstanceIds: this.instanceIds(this.params.reservation)}, function(err, data) {
+      this.ec2.startInstances({InstanceIds: this.instanceIds(this.params.reservation)}, (err, data) => {
         if(err) log.error(err)
         this.reservation = this.params.reservation
-      }.bind(this))
+      })
     } else {
       let p = {
         ImageId: this.params.ami,
@@ -42,12 +42,12 @@ class Instance extends EventEmitter {
         SecurityGroupIds: ["sg-c64bf0a1"]
       }
 
-      this.ec2.runInstances(p, function(err, data) {
+      this.ec2.runInstances(p, (err, data) => {
         if (err) log.error(err, err.stack) // an error occurred
         else {
           this.reservation = data
         }
-      }.bind(this))
+      })
     }
   }
 
@@ -68,21 +68,21 @@ class Instance extends EventEmitter {
     var keyId   =  uuid()
     var keyName = "Haiku-" + keyId
 
-    this.ec2.createKeyPair({ KeyName: keyName }, function(err, data) {
+    this.ec2.createKeyPair({ KeyName: keyName }, (err, data) => {
       if (err) log.error(err, err.stack)
       else {
-        fs.writeFile(this.appDataPath() + "/" + keyName + ".pem", data.KeyMaterial, {mode: "400"}, function(err) {
+        fs.writeFile(this.appDataPath() + "/" + keyName + ".pem", data.KeyMaterial, {mode: "400"}, (err) => {
           if(err) return log.error(err)
           this.keyName = keyName
           callback(keyName)
-        }.bind(this))
+        })
       }
-    }.bind(this))
+    })
   }
 
   remove(callback) {
     log.info("Stopping Instance")
-    this.ec2.stopInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
+    this.ec2.stopInstances({ InstanceIds: this.instanceIds() }, (err, data) => {
       if(err) log.error(err)
 
       let reservations = {}
@@ -93,7 +93,7 @@ class Instance extends EventEmitter {
 
       this.status = "stopped"
       callback()
-    }.bind(this))
+    })
   }
 
   instanceIds(r) {
@@ -127,16 +127,16 @@ class Instance extends EventEmitter {
   }
 
   pollInstanceState(callback) {
-    this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
+    this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, (err, data) => {
       this.reservation = data.Reservations[0]
       if(!instancesReady(this.reservation)) {
-        setTimeout(function() { this.pollInstanceState(callback) }.bind(this), 1000)
+        setTimeout(() => { this.pollInstanceState(callback) }, 1000)
       } else {
         this.emit("connecting")
         log.info("Waiting for SSH Connection...")
         this.pollSSHConnection(callback)
       }
-    }.bind(this))
+    })
   }
 
   keyPath() {
