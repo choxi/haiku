@@ -20,7 +20,7 @@ class Instance extends EventEmitter {
     this.ec2    = new AWS.EC2(config.ec2)
 
     this.emit("creating")
-    this.findOrCreateKey(this.createInstance.bind(this))
+    this.findOrCreateKey().then(() => { this.createInstance() })
 
     return this
   }
@@ -52,19 +52,21 @@ class Instance extends EventEmitter {
   }
 
   findOrCreateKey(callback) {
-    var keyFiles = glob.sync(this.appDataPath() + "/*.pem")
+    return new Promise((resolve, reject) => {
+      var keyFiles = glob.sync(this.appDataPath() + "/*.pem")
 
-    if(keyFiles.length > 0) {
-      let paths     = keyFiles[0].split("/")
-      this.keyName  = paths[paths.length - 1].match(/(.+)\.pem/)[1]
+      if(keyFiles.length > 0) {
+        let paths     = keyFiles[0].split("/")
+        this.keyName  = paths[paths.length - 1].match(/(.+)\.pem/)[1]
 
-      callback(this.keyName)
-    } else {
-      this.createAndSaveKeyPair(callback)
-    }
+        resolve(this.keyName)
+      } else {
+        this.createAndSaveKeyPair(resolve, reject)
+      }
+    })
   }
 
-  createAndSaveKeyPair(callback) {
+  createAndSaveKeyPair(resolve, reject) {
     var keyId   =  uuid()
     var keyName = "Haiku-" + keyId
 
@@ -74,7 +76,7 @@ class Instance extends EventEmitter {
         fs.writeFile(this.appDataPath() + "/" + keyName + ".pem", data.KeyMaterial, {mode: "400"}, (err) => {
           if(err) return log.error(err)
           this.keyName = keyName
-          callback(keyName)
+          resolve(keyName)
         })
       }
     })
