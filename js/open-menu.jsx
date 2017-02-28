@@ -92,8 +92,10 @@ class OpenMenu extends React.Component {
           {selectInstance}
 
           <table className="select-instance">
-            <tr><th>Name</th><th>Created</th></tr>
-            { mappedReservations } 
+            <tbody>
+              <tr><th>Name</th><th>Created</th></tr>
+              { mappedReservations }
+            </tbody>
           </table>
 
           <button disabled={this.disableOpenButton()} onClick={this.create}>Open</button>
