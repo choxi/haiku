@@ -1,15 +1,15 @@
 const electron      = require('electron')
 const remote        = electron.remote
 const app           = remote.getGlobal("app")
-const EventEmitter  = require('events');
+const EventEmitter  = require('events')
 
-var AWS     = require("aws-sdk");
-var uuid    = require("uuid/v4");
-var glob    = require("glob");
-var fs      = require("fs");
-var config  = JSON.parse(fs.readFileSync(app.getAppPath() + "/config.json"));
-var SSH     = require("simple-ssh");
-var log     = require('electron-log');
+var AWS     = require("aws-sdk")
+var uuid    = require("uuid/v4")
+var glob    = require("glob")
+var fs      = require("fs")
+var config  = JSON.parse(fs.readFileSync(app.getAppPath() + "/config.json"))
+var SSH     = require("simple-ssh")
+var log     = require('electron-log')
 
 class Instance extends EventEmitter {
   constructor(params) {
@@ -21,7 +21,8 @@ class Instance extends EventEmitter {
 
     this.emit("creating")
     this.findOrCreateKey(this.createInstance.bind(this))
-    return this;
+
+    return this
   }
 
   createInstance(keyName) {
@@ -42,41 +43,41 @@ class Instance extends EventEmitter {
       }
 
       this.ec2.runInstances(p, function(err, data) {
-        if (err) log.error(err, err.stack); // an error occurred
+        if (err) log.error(err, err.stack) // an error occurred
         else {
-          this.reservation = data;
+          this.reservation = data
         }
-      }.bind(this));
+      }.bind(this))
     }
   }
 
   findOrCreateKey(callback) {
-    var keyFiles = glob.sync(this.appDataPath() + "/*.pem");
+    var keyFiles = glob.sync(this.appDataPath() + "/*.pem")
 
     if(keyFiles.length > 0) {
       let paths     = keyFiles[0].split("/")
       this.keyName  = paths[paths.length - 1].match(/(.+)\.pem/)[1]
 
-      callback(this.keyName);
+      callback(this.keyName)
     } else {
-      this.createAndSaveKeyPair(callback);
+      this.createAndSaveKeyPair(callback)
     }
   }
 
   createAndSaveKeyPair(callback) {
-    var keyId   =  uuid();
-    var keyName = "Haiku-" + keyId;
+    var keyId   =  uuid()
+    var keyName = "Haiku-" + keyId
 
     this.ec2.createKeyPair({ KeyName: keyName }, function(err, data) {
-      if (err) log.error(err, err.stack);
+      if (err) log.error(err, err.stack)
       else {
         fs.writeFile(this.appDataPath() + "/" + keyName + ".pem", data.KeyMaterial, {mode: "400"}, function(err) {
-          if(err) return log.error(err);
-          this.keyName = keyName;
-          callback(keyName);
-        }.bind(this));
+          if(err) return log.error(err)
+          this.keyName = keyName
+          callback(keyName)
+        }.bind(this))
       }
-    }.bind(this));
+    }.bind(this))
   }
 
   remove(callback) {
@@ -91,20 +92,20 @@ class Instance extends EventEmitter {
       fs.writeFileSync(path, JSON.stringify(reservations))
 
       this.status = "stopped"
-      callback();
-    }.bind(this));
+      callback()
+    }.bind(this))
   }
 
   instanceIds(r) {
-    var instanceIds = [];
+    var instanceIds = []
     let reservation = r || this.reservation
 
     for(let i=0; i < reservation.Instances.length; i++) {
-      let instance = reservation.Instances[i];
-      instanceIds.push(instance.InstanceId);
+      let instance = reservation.Instances[i]
+      instanceIds.push(instance.InstanceId)
     }
 
-    return instanceIds;
+    return instanceIds
   }
 
   //  Before we can SSH, we need to wait for:
@@ -116,30 +117,30 @@ class Instance extends EventEmitter {
   waitUntilRunning(callback) {
     if(this.reservation === undefined) {
       setTimeout(function() {
-        this.waitUntilRunning(callback);
-      }.bind(this), 1000);
+        this.waitUntilRunning(callback)
+      }.bind(this), 1000)
     } else {
       log.info("Waiting for Instance to Start...")
       this.emit("starting")
-      this.pollInstanceState(callback);
+      this.pollInstanceState(callback)
     }
   }
 
   pollInstanceState(callback) {
     this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, function(err, data) {
-      this.reservation = data.Reservations[0];
+      this.reservation = data.Reservations[0]
       if(!instancesReady(this.reservation)) {
-        setTimeout(function() { this.pollInstanceState(callback) }.bind(this), 1000);
+        setTimeout(function() { this.pollInstanceState(callback) }.bind(this), 1000)
       } else {
         this.emit("connecting")
         log.info("Waiting for SSH Connection...")
-        this.pollSSHConnection(callback);
+        this.pollSSHConnection(callback)
       }
-    }.bind(this));
+    }.bind(this))
   }
 
   keyPath() {
-    return this.appDataPath() + "/" + this.keyName + ".pem";
+    return this.appDataPath() + "/" + this.keyName + ".pem"
   }
   
   appDataPath() {
@@ -153,33 +154,33 @@ class Instance extends EventEmitter {
       key: fs.readFileSync(this.keyPath()),
       timeout: 1000
     }
-    let ssh = new SSH(config);
+    let ssh = new SSH(config)
 
     ssh.exec("exit").start({
       success: function() {
-        log.info("Instance Ready");
+        log.info("Instance Ready")
         this.emit("ready")
-        callback(this.keyPath(), this.reservation.Instances[0].PublicIpAddress);
+        callback(this.keyPath(), this.reservation.Instances[0].PublicIpAddress)
       }.bind(this),
       fail: function(err) {
         if(err.message !== "Timed out while waiting for handshake" && err.code !== "ECONNREFUSED") {
           log.error(err)
         }
-        this.pollSSHConnection(callback);
+        this.pollSSHConnection(callback)
       }.bind(this)
-    });
+    })
   }
 }
 
 function instancesReady(reservation) {
-  let ready = true;
+  let ready = true
 
   for(let i=0; i < reservation.Instances.length; i++) {
-    let instance = reservation.Instances[i];
-    if(instance.State.Name !== "running") ready = false;
+    let instance = reservation.Instances[i]
+    if(instance.State.Name !== "running") ready = false
   }
 
-  return ready;
+  return ready
 }
 
 module.exports = Instance 
