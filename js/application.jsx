@@ -67,7 +67,7 @@ function createInstance(params) {
     term.focus();
   })
 
-  instance.createInstance()
+  instance.create()
 
   window.addEventListener("resize", term.fit.bind(term))
   window.onbeforeunload = function(event) {

@@ -21,7 +21,7 @@ class Instance extends EventEmitter {
     return this
   }
 
-  createInstance() {
+  create() {
     this.emit("creating")
     this.status = "running"
 
