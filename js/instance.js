@@ -28,7 +28,7 @@ class Instance extends EventEmitter {
     log.info("Creating Instance...")
 
     this.findOrCreateKey().then(this.startInstance.bind(this))
-                          .then(this.pollInstanceState.bind(this))
+                          .then(() => { this.pollInstanceState("running") })
                           .then(this.pollSSHConnection.bind(this))
                           .then(function() { log.info("Done") })
   }
@@ -121,11 +121,11 @@ class Instance extends EventEmitter {
     return instanceIds
   }
 
-  pollInstanceState() {
+  pollInstanceState(state) {
     return poll((ready) => {
       this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, (err, data) => {
         this.reservation = data.Reservations[0]
-        ready(instancesInState(this.reservation, "running"))
+        ready(instancesInState(this.reservation, state))
       })
     })
   }
