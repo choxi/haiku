@@ -32,33 +32,36 @@ class Instance extends EventEmitter {
     //                         .then(ready)
 
     this.findOrCreateKey().then(this.startInstance.bind(this))
+                          .then(this.waitUntilRunning.bind(this))
   }
   
   startInstance(keyName) {
-    if(this.params.reservation) {
-      this.ec2.startInstances({InstanceIds: this.instanceIds(this.params.reservation)}, (err, data) => {
-        if(err) log.error(err)
-        this.reservation = this.params.reservation
-        this.waitUntilRunning()
-      })
-    } else {
-      let p = {
-        ImageId: this.params.ami,
-        InstanceType: "t2.micro",
-        MaxCount: 1,
-        MinCount: 1,
-        KeyName: keyName,
-        SecurityGroupIds: ["sg-c64bf0a1"]
-      }
-
-      this.ec2.runInstances(p, (err, data) => {
-        if (err) log.error(err, err.stack) // an error occurred
-        else {
-          this.reservation = data
-          this.waitUntilRunning()
+    return new Promise((resolve, reject) => {
+      if(this.params.reservation) {
+        this.ec2.startInstances({InstanceIds: this.instanceIds(this.params.reservation)}, (err, data) => {
+          if(err) log.error(err)
+          this.reservation = this.params.reservation
+          resolve()
+        })
+      } else {
+        let p = {
+          ImageId: this.params.ami,
+          InstanceType: "t2.micro",
+          MaxCount: 1,
+          MinCount: 1,
+          KeyName: keyName,
+          SecurityGroupIds: ["sg-c64bf0a1"]
         }
-      })
-    }
+
+        this.ec2.runInstances(p, (err, data) => {
+          if (err) log.error(err, err.stack) // an error occurred
+          else {
+            this.reservation = data
+            resolve()
+          }
+        })
+      }
+    })
   }
 
   findOrCreateKey(callback) {
