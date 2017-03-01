@@ -96,6 +96,11 @@ class Instance extends EventEmitter {
   }
 
   remove(callback) {
+    if(!this.reservation) {
+      log.warn("You tried to call .remove() but no reservation was set")
+      return
+    }
+
     log.info("Stopping Instance")
     this.ec2.stopInstances({ InstanceIds: this.instanceIds() }, (err, data) => {
       if(err) log.error(err)
