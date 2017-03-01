@@ -26,32 +26,39 @@ class Instance extends EventEmitter {
     this.status = "running"
 
     log.info("Creating Instance...")
-    this.findOrCreateKey().then((keyName) => {
-      if(this.params.reservation) {
-        this.ec2.startInstances({InstanceIds: this.instanceIds(this.params.reservation)}, (err, data) => {
-          if(err) log.error(err)
-          this.reservation = this.params.reservation
-          this.waitUntilRunning()
-        })
-      } else {
-        let p = {
-          ImageId: this.params.ami,
-          InstanceType: "t2.micro",
-          MaxCount: 1,
-          MinCount: 1,
-          KeyName: keyName,
-          SecurityGroupIds: ["sg-c64bf0a1"]
-        }
+    //   this.findOrCreateKey().then(startInstance)
+    //                         .then(pollInstanceState)
+    //                         .then(pollSSHServer)
+    //                         .then(ready)
 
-        this.ec2.runInstances(p, (err, data) => {
-          if (err) log.error(err, err.stack) // an error occurred
-          else {
-            this.reservation = data
-            this.waitUntilRunning()
-          }
-        })
+    this.findOrCreateKey().then(this.startInstance.bind(this))
+  }
+  
+  startInstance(keyName) {
+    if(this.params.reservation) {
+      this.ec2.startInstances({InstanceIds: this.instanceIds(this.params.reservation)}, (err, data) => {
+        if(err) log.error(err)
+        this.reservation = this.params.reservation
+        this.waitUntilRunning()
+      })
+    } else {
+      let p = {
+        ImageId: this.params.ami,
+        InstanceType: "t2.micro",
+        MaxCount: 1,
+        MinCount: 1,
+        KeyName: keyName,
+        SecurityGroupIds: ["sg-c64bf0a1"]
       }
-    })
+
+      this.ec2.runInstances(p, (err, data) => {
+        if (err) log.error(err, err.stack) // an error occurred
+        else {
+          this.reservation = data
+          this.waitUntilRunning()
+        }
+      })
+    }
   }
 
   findOrCreateKey(callback) {
