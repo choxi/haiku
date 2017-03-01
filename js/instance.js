@@ -132,22 +132,22 @@ class Instance extends EventEmitter {
   //    - the instance to boot up its SSH server
   //
   waitUntilRunning() {
-    return poll((callback) => {
+    return poll((ready) => {
       if(this.reservation === undefined) {
-        callback(false)
+        ready(false)
       } else {
         log.info("Waiting for Instance to Start...")
         this.emit("starting")
-        callback(true)
+        ready(true)
       }
     })
   }
 
   pollInstanceState() {
-    return poll((callback) => {
+    return poll((ready) => {
       this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, (err, data) => {
         this.reservation = data.Reservations[0]
-        callback(instancesReady(this.reservation))
+        ready(instancesReady(this.reservation))
       })
     })
   }
