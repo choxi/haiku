@@ -33,6 +33,7 @@ class Instance extends EventEmitter {
 
     this.findOrCreateKey().then(this.startInstance.bind(this))
                           .then(this.waitUntilRunning.bind(this))
+                          .then(this.pollInstanceState.bind(this))
   }
   
   startInstance(keyName) {
@@ -130,13 +131,15 @@ class Instance extends EventEmitter {
   //    - the instance to boot up its SSH server
   //
   waitUntilRunning() {
-    if(this.reservation === undefined) {
-      setTimeout(this.waitUntilRunning.bind(this), 1000)
-    } else {
-      log.info("Waiting for Instance to Start...")
-      this.emit("starting")
-      this.pollInstanceState()
-    }
+    return new Promise((resolve, reject) => {
+      if(this.reservation === undefined) {
+        setTimeout(this.waitUntilRunning.bind(this), 1000)
+      } else {
+        log.info("Waiting for Instance to Start...")
+        this.emit("starting")
+        resolve()
+      }
+    })
   }
 
   pollInstanceState() {
