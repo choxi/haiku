@@ -26,18 +26,11 @@ class Instance extends EventEmitter {
     this.status = "running"
 
     log.info("Creating Instance...")
-    //   this.findOrCreateKey().then(startInstance)
-    //                         .then(pollInstanceState)
-    //                         .then(pollSSHServer)
-    //                         .then(ready)
 
     this.findOrCreateKey().then(this.startInstance.bind(this))
-                          .then(this.waitUntilRunning.bind(this))
                           .then(this.pollInstanceState.bind(this))
                           .then(this.pollSSHConnection.bind(this))
-                          .then(function() {
-                            log.info("Done")
-                          })
+                          .then(function() { log.info("Done") })
   }
   
   startInstance(keyName) {
@@ -126,24 +119,6 @@ class Instance extends EventEmitter {
     }
 
     return instanceIds
-  }
-
-  //  Before we can SSH, we need to wait for:
-  //
-  //    - the EC2 reservation request to complete
-  //    - the instance to change state to "running"
-  //    - the instance to boot up its SSH server
-  //
-  waitUntilRunning() {
-    return poll((ready) => {
-      if(this.reservation === undefined) {
-        ready(false)
-      } else {
-        log.info("Waiting for Instance to Start...")
-        this.emit("starting")
-        ready(true)
-      }
-    })
   }
 
   pollInstanceState() {
