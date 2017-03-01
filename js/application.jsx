@@ -40,16 +40,14 @@ function createInstance(params) {
   term.open(document.getElementsByClassName('terminal-wrapper')[0])
   term.fit()
 
-  instance.on("ready", function() {
+  instance.on("ready", function(keyPath, ipAddress) {
     outerProgress.animate(1)
     innerProgress.animate(1, function() {
       $(".loading-screen").hide()
       $(".terminal-wrapper").show()
       term.fit();
     }.bind(this))
-  })
 
-  instance.waitUntilRunning(function(keyPath, ipAddress) {
     var sshLogin        = "ec2-user@" + ipAddress;
     var sshArgs         = ["-oStrictHostKeyChecking=no", "-i", keyPath, sshLogin];
     var pty             = require('pty').spawn("ssh", sshArgs, { name: "xterm-256color" });
@@ -67,7 +65,9 @@ function createInstance(params) {
     })
 
     term.focus();
-  });
+  })
+
+  instance.createInstance()
 
   window.addEventListener("resize", term.fit.bind(term))
   window.onbeforeunload = function(event) {

@@ -16,22 +16,22 @@ class Instance extends EventEmitter {
     super()
 
     this.params = params
-    this.status = "running"
     this.ec2    = new AWS.EC2(config.ec2)
-
-    this.emit("creating")
-    this.createInstance()
 
     return this
   }
 
   createInstance() {
+    this.emit("creating")
+    this.status = "running"
+
     log.info("Creating Instance...")
     this.findOrCreateKey().then((keyName) => {
       if(this.params.reservation) {
         this.ec2.startInstances({InstanceIds: this.instanceIds(this.params.reservation)}, (err, data) => {
           if(err) log.error(err)
           this.reservation = this.params.reservation
+          this.waitUntilRunning()
         })
       } else {
         let p = {
@@ -47,6 +47,7 @@ class Instance extends EventEmitter {
           if (err) log.error(err, err.stack) // an error occurred
           else {
             this.reservation = data
+            this.waitUntilRunning()
           }
         })
       }
@@ -118,27 +119,23 @@ class Instance extends EventEmitter {
   //    - the instance to change state to "running"
   //    - the instance to boot up its SSH server
   //
-  waitUntilRunning(callback) {
+  waitUntilRunning() {
     if(this.reservation === undefined) {
-      setTimeout(function() {
-        this.waitUntilRunning(callback)
-      }.bind(this), 1000)
+      setTimeout(this.waitUntilRunning.bind(this), 1000)
     } else {
       log.info("Waiting for Instance to Start...")
       this.emit("starting")
-      this.pollInstanceState(callback)
+      this.pollInstanceState()
     }
   }
 
-  pollInstanceState(callback) {
+  pollInstanceState() {
     this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, (err, data) => {
       this.reservation = data.Reservations[0]
       if(!instancesReady(this.reservation)) {
-        setTimeout(() => { this.pollInstanceState(callback) }, 1000)
+        setTimeout(() => { this.pollInstanceState() }, 1000)
       } else {
-        this.emit("connecting")
-        log.info("Waiting for SSH Connection...")
-        this.pollSSHConnection(callback)
+        this.pollSSHConnection()
       }
     })
   }
@@ -151,7 +148,10 @@ class Instance extends EventEmitter {
     return app.getPath("appData") + "/Haiku"
   }
 
-  pollSSHConnection(callback) {
+  pollSSHConnection() {
+    this.emit("connecting")
+    log.info("Waiting for SSH Connection...")
+
     let config = {
       host: this.reservation.Instances[0].PublicIpAddress,
       user: 'ec2-user',
@@ -163,14 +163,13 @@ class Instance extends EventEmitter {
     ssh.exec("exit").start({
       success: function() {
         log.info("Instance Ready")
-        this.emit("ready")
-        callback(this.keyPath(), this.reservation.Instances[0].PublicIpAddress)
+        this.emit("ready", this.keyPath(), this.reservation.Instances[0].PublicIpAddress)
       }.bind(this),
       fail: function(err) {
         if(err.message !== "Timed out while waiting for handshake" && err.code !== "ECONNREFUSED") {
           log.error(err)
         }
-        this.pollSSHConnection(callback)
+        this.pollSSHConnection()
       }.bind(this)
     })
   }
