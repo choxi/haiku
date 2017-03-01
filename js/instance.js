@@ -34,6 +34,7 @@ class Instance extends EventEmitter {
     this.findOrCreateKey().then(this.startInstance.bind(this))
                           .then(this.waitUntilRunning.bind(this))
                           .then(this.pollInstanceState.bind(this))
+                          .then(this.pollSSHConnection.bind(this))
   }
   
   startInstance(keyName) {
@@ -131,25 +132,23 @@ class Instance extends EventEmitter {
   //    - the instance to boot up its SSH server
   //
   waitUntilRunning() {
-    return new Promise((resolve, reject) => {
+    return poll((callback) => {
       if(this.reservation === undefined) {
-        setTimeout(this.waitUntilRunning.bind(this), 1000)
+        callback(false)
       } else {
         log.info("Waiting for Instance to Start...")
         this.emit("starting")
-        resolve()
+        callback(true)
       }
     })
   }
 
   pollInstanceState() {
-    this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, (err, data) => {
-      this.reservation = data.Reservations[0]
-      if(!instancesReady(this.reservation)) {
-        setTimeout(() => { this.pollInstanceState() }, 1000)
-      } else {
-        this.pollSSHConnection()
-      }
+    return poll((callback) => {
+      this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, (err, data) => {
+        this.reservation = data.Reservations[0]
+        callback(instancesReady(this.reservation))
+      })
     })
   }
 
@@ -186,6 +185,22 @@ class Instance extends EventEmitter {
       }.bind(this)
     })
   }
+}
+
+function poll(callback) {
+  return new Promise((resolve, reject) => {
+    function _poll() {
+      callback(function(ready) {
+        if(ready)
+          resolve()
+        else {
+          setTimeout(_poll, 1000)
+        }
+      })
+    } 
+
+    _poll()
+  })
 }
 
 function instancesReady(reservation) {
