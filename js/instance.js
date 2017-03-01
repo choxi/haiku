@@ -125,7 +125,7 @@ class Instance extends EventEmitter {
     return poll((ready) => {
       this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, (err, data) => {
         this.reservation = data.Reservations[0]
-        ready(instancesReady(this.reservation))
+        ready(instancesInState(this.reservation, "running"))
       })
     })
   }
@@ -186,12 +186,12 @@ function poll(callback) {
   })
 }
 
-function instancesReady(reservation) {
+function instancesInState(reservation, state) {
   let ready = true
 
   for(let i=0; i < reservation.Instances.length; i++) {
     let instance = reservation.Instances[i]
-    if(instance.State.Name !== "running") ready = false
+    if(instance.State.Name !== state) ready = false
   }
 
   return ready
