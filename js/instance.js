@@ -35,6 +35,9 @@ class Instance extends EventEmitter {
                           .then(this.waitUntilRunning.bind(this))
                           .then(this.pollInstanceState.bind(this))
                           .then(this.pollSSHConnection.bind(this))
+                          .then(function() {
+                            log.info("Done")
+                          })
   }
   
   startInstance(keyName) {
@@ -164,26 +167,31 @@ class Instance extends EventEmitter {
     this.emit("connecting")
     log.info("Waiting for SSH Connection...")
 
-    let config = {
-      host: this.reservation.Instances[0].PublicIpAddress,
-      user: 'ec2-user',
-      key: fs.readFileSync(this.keyPath()),
-      timeout: 1000
-    }
-    let ssh = new SSH(config)
+    return poll(function(ready) {
 
-    ssh.exec("exit").start({
-      success: function() {
-        log.info("Instance Ready")
-        this.emit("ready", this.keyPath(), this.reservation.Instances[0].PublicIpAddress)
-      }.bind(this),
-      fail: function(err) {
-        if(err.message !== "Timed out while waiting for handshake" && err.code !== "ECONNREFUSED") {
-          log.error(err)
+      let config = {
+        host: this.reservation.Instances[0].PublicIpAddress,
+        user: 'ec2-user',
+        key: fs.readFileSync(this.keyPath()),
+        timeout: 1000
+      }
+      let ssh = new SSH(config)
+ 
+      ssh.exec("exit").start({
+        success: () => {
+          log.info("Instance Ready")
+          this.emit("ready", this.keyPath(), this.reservation.Instances[0].PublicIpAddress)
+          ready(true)
+        },
+        fail: (err) => {
+          if(err.message !== "Timed out while waiting for handshake" && err.code !== "ECONNREFUSED") {
+            log.error(err)
+          }
+
+          ready(false)
         }
-        this.pollSSHConnection()
-      }.bind(this)
-    })
+      })
+    }.bind(this))
   }
 }
 
