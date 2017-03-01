@@ -62,7 +62,7 @@ class Instance extends EventEmitter {
     })
   }
 
-  findOrCreateKey(callback) {
+  findOrCreateKey() {
     return new Promise((resolve, reject) => {
       var keyFiles = glob.sync(this.appDataPath() + "/*.pem")
 
