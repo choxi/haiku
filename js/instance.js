@@ -36,10 +36,12 @@ class Instance extends EventEmitter {
   startInstance(keyName) {
     return new Promise((resolve, reject) => {
       if(this.params.reservation) {
-        this.ec2.startInstances({InstanceIds: this.instanceIds(this.params.reservation)}, (err, data) => {
-          if(err) log.error(err)
-          this.reservation = this.params.reservation
-          resolve()
+        this.pollInstanceState("stopped", this.params.reservation).then(() => {
+          this.ec2.startInstances({InstanceIds: this.instanceIds(this.params.reservation)}, (err, data) => {
+            if(err) log.error(err)
+            this.reservation = this.params.reservation
+            resolve()
+          })
         })
       } else {
         let p = {
@@ -121,9 +123,11 @@ class Instance extends EventEmitter {
     return instanceIds
   }
 
-  pollInstanceState(state) {
+  pollInstanceState(state, r) {
+    let reservation = r || this.reservation
+
     return poll((ready) => {
-      this.ec2.describeInstances({ InstanceIds: this.instanceIds() }, (err, data) => {
+      this.ec2.describeInstances({ InstanceIds: this.instanceIds(reservation) }, (err, data) => {
         this.reservation = data.Reservations[0]
         ready(instancesInState(this.reservation, state))
       })
