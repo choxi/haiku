@@ -42,6 +42,6 @@
   "scripts": {
     "open": "open haiku-darwin-x64/haiku.app",
     "compile": "rm -rf .cache && electron-compile .",
-    "publish": "npm run compile && node_modules/.bin/build --mac -p always"
+    "publish": "npm run compile && node_modules/.bin/build --mac -p always && rm -rf .cache"
   }
 }
