@@ -12,6 +12,26 @@ global.app = app
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+function login() {
+  // huge hack to make github oauth page work
+  process.env.NODE_ENV = "production"
+
+  let OauthGithub = require('electron-oauth-github');
+
+  let github = new OauthGithub({
+    id: process.env.GITHUB_CLIENT_ID,
+    secret: process.env.GITHUB_CLIENT_SECRET,
+    scopes: [],
+  })
+
+  github.startRequest(function(access_token, err) {
+    if (err) log.error(err)
+    process.env.NODE_ENV = undefined
+
+    log.info(access_token)
+  })
+}
+
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({

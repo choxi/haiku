@@ -8,3 +8,4 @@ reservation.json
 build/
 dist/
 .cache/
+.env
