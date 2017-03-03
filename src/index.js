@@ -6,6 +6,7 @@ const url             = require('url')
 const autoUpdater     = require("electron-updater").autoUpdater
 const log             = require("electron-log")
 const OauthGithub     = require('electron-oauth-github')
+const fs              = require("fs")
 
 global.app = app
 
@@ -22,13 +23,19 @@ function login() {
     scopes: [],
   })
 
-  github.startRequest(function(access_token, err) {
-    if (err) log.error(err)
+  let tokenPath = path.join(app.getPath("appData"), "haiku", ".github_access_token")
+  let token
 
-    log.info(access_token)
+  if(fs.existsSync(tokenPath)) {
+    token = fs.readFileSync(tokenPath) 
+  } else {
+    github.startRequest(function(access_token, err) {
+      if (err) log.error(err)
+      fs.writeFileSync(tokenPath, access_token)
 
-    createWindow()
-  })
+      createWindow()
+    })
+  }
 }
 
 login()
