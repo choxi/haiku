@@ -7,7 +7,7 @@
   "dependencies": {
     "ansi-to-html": "",
     "aws-sdk": "",
-    "electron-compile": "^6.1.2",
+    "electron-compilers": "5.5.1",
     "electron-log": "",
     "electron-oauth-github": "^1.1.0",
     "electron-updater": "",
@@ -35,6 +35,7 @@
     "babel-preset-es2016": "^6.22.0",
     "electron": "^1.4.15",
     "electron-builder": "",
+    "electron-compile": "6.1.2",
     "electron-compilers": "^5.5.1",
     "electron-packager": "^8.5.1",
     "foreman": "2.0.0",
