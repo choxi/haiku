@@ -1,8 +1,8 @@
 const ProgressBar = require('progressbar.js')
-const Instance    = require("./js/instance.js");
+const Instance    = require("./instance.js");
 const React       = require("react")
 const ReactDOM    = require("react-dom")
-const OpenMenu    = require("./js/open-menu.jsx")
+const OpenMenu    = require("./open-menu.jsx")
 
 function createInstance(params) {
   var instance = new Instance(params)

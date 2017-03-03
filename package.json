@@ -3,10 +3,11 @@
   "description": "A simple cloud IDE",
   "author": "Roshan Choxi",
   "version": "0.0.3",
-  "main": "index.js",
+  "main": "js/index.js",
   "dependencies": {
     "ansi-to-html": "",
     "aws-sdk": "",
+    "electron-compile": "6.1.2",
     "electron-log": "",
     "electron-oauth-github": "git+ssh://git@github.com/choxi/electron-oauth-github.git",
     "electron-updater": "",
@@ -30,15 +31,48 @@
     ]
   },
   "devDependencies": {
-    "electron-builder": "",
-    "electron-packager": "^8.5.1",
-    "electron-prebuilt-compile": "^1.4.15",
+    "babel-plugin-transform-async-to-generator": "6.22.0",
+    "babel-preset-env": "1.1.11",
+    "babel-preset-react": "6.23.0",
+    "electron-prebuilt-compile": "1.4.15",
     "electron-rebuild": "1.5.7",
     "png2icns": "0.0.1"
   },
   "scripts": {
     "open": "open haiku-darwin-x64/haiku.app",
     "compile": "rm -rf .cache && electron-compile .",
-    "publish": "npm run compile && node_modules/.bin/build --mac -p always && rm -rf .cache"
+    "publish": "npm run compile && node_modules/.bin/build --mac -p always && rm -rf .cache",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "config": {
+    "forge": {
+      "make_targets": {
+        "win32": [
+          "squirrel"
+        ],
+        "darwin": [
+          "zip"
+        ],
+        "linux": [
+          "deb",
+          "rpm"
+        ]
+      },
+      "electronPackagerConfig": {},
+      "electronWinstallerConfig": {
+        "name": ""
+      },
+      "electronInstallerDebian": {},
+      "electronInstallerRedhat": {},
+      "github_repository": {
+        "owner": "",
+        "name": ""
+      },
+      "windowsStoreConfig": {
+        "packageName": ""
+      }
+    }
   }
 }
