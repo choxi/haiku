@@ -8,7 +8,7 @@
     "ansi-to-html": "",
     "aws-sdk": "",
     "electron-log": "",
-    "electron-oauth-github": "^1.1.0",
+    "electron-oauth-github": "git+ssh://git@github.com/choxi/electron-oauth-github.git",
     "electron-updater": "",
     "glob": "",
     "progressbar.js": "1.0.1",

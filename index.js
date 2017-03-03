@@ -13,9 +13,6 @@ global.app = app
 let mainWindow
 
 function login() {
-  // huge hack to make github oauth page work
-  process.env.NODE_ENV = "production"
-
   let OauthGithub = require('electron-oauth-github');
 
   let github = new OauthGithub({
@@ -26,11 +23,12 @@ function login() {
 
   github.startRequest(function(access_token, err) {
     if (err) log.error(err)
-    process.env.NODE_ENV = undefined
 
     log.info(access_token)
   })
 }
+
+login()
 
 function createWindow () {
   // Create the browser window.
