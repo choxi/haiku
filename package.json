@@ -34,7 +34,6 @@
     "electron-packager": "^8.5.1",
     "electron-prebuilt-compile": "^1.4.15",
     "electron-rebuild": "1.5.7",
-    "foreman": "2.0.0",
     "png2icns": "0.0.1"
   },
   "scripts": {

@@ -5,6 +5,7 @@ const path            = require('path')
 const url             = require('url')
 const autoUpdater     = require("electron-updater").autoUpdater
 const log             = require("electron-log")
+const OauthGithub     = require('electron-oauth-github')
 
 global.app = app
 
@@ -13,11 +14,11 @@ global.app = app
 let mainWindow
 
 function login() {
-  let OauthGithub = require('electron-oauth-github');
+  let config = require(__dirname + "/config.json")
 
   let github = new OauthGithub({
-    id: process.env.GITHUB_CLIENT_ID,
-    secret: process.env.GITHUB_CLIENT_SECRET,
+    id: config.github.client_id,
+    secret: config.github.client_secret,
     scopes: [],
   })
 
