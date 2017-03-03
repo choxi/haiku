@@ -14,7 +14,7 @@ global.app = app
 let mainWindow
 
 function login() {
-  let config = require(__dirname + "/config.json")
+  let config = require(path.join(__dirname, "..", "config", "config.json"))
 
   let github = new OauthGithub({
     id: config.github.client_id,

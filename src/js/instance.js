@@ -2,12 +2,13 @@ const electron      = require('electron')
 const remote        = electron.remote
 const app           = remote.getGlobal("app")
 const EventEmitter  = require('events')
+const path          = require('path')
 
 var AWS     = require("aws-sdk")
 var uuid    = require("uuid/v4")
 var glob    = require("glob")
 var fs      = require("fs")
-var config  = JSON.parse(fs.readFileSync(__dirname + "/config.json"))
+var config  = require(path.join(__dirname, "..", "..", "config", "config.json"))
 var SSH     = require("simple-ssh")
 var log     = require('electron-log')
 

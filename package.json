@@ -3,7 +3,7 @@
   "description": "A simple cloud IDE",
   "author": "Roshan Choxi",
   "version": "0.0.3",
-  "main": "js/index.js",
+  "main": "src/index.js",
   "dependencies": {
     "ansi-to-html": "",
     "aws-sdk": "",
