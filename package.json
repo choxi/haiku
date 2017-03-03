@@ -9,7 +9,6 @@
     "aws-sdk": "",
     "electron-log": "",
     "electron-oauth-github": "^1.1.0",
-    "electron-prebuilt-compile": "1.6.1",
     "electron-updater": "",
     "glob": "",
     "progressbar.js": "1.0.1",
