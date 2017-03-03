@@ -3,13 +3,13 @@
   "description": "A simple cloud IDE",
   "author": "Roshan Choxi",
   "version": "0.0.3",
-  "main": "main.js",
+  "main": "index.js",
   "dependencies": {
     "ansi-to-html": "",
     "aws-sdk": "",
-    "electron-compilers": "5.5.1",
     "electron-log": "",
     "electron-oauth-github": "^1.1.0",
+    "electron-prebuilt-compile": "1.6.1",
     "electron-updater": "",
     "glob": "",
     "progressbar.js": "1.0.1",
@@ -31,12 +31,8 @@
     ]
   },
   "devDependencies": {
-    "babel-preset-es2015": "^6.22.0",
-    "babel-preset-es2016": "^6.22.0",
-    "electron": "^1.4.15",
+    "electron-prebuilt-compile": "^1.4.15",
     "electron-builder": "",
-    "electron-compile": "6.1.2",
-    "electron-compilers": "^5.5.1",
     "electron-packager": "^8.5.1",
     "foreman": "2.0.0",
     "png2icns": "0.0.1"
