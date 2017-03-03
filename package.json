@@ -2,7 +2,7 @@
   "name": "Haiku",
   "description": "A simple cloud IDE",
   "author": "Roshan Choxi",
-  "version": "0.0.3",
+  "version": "0.0.0",
   "main": "src/index.js",
   "dependencies": {
     "ansi-to-html": "",
@@ -19,16 +19,6 @@
     "simple-ssh": "",
     "string_decoder": "",
     "uuid": ""
-  },
-  "build": {
-    "appId": "com.electron.haiku",
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "choxi",
-        "repo": "haiku"
-      }
-    ]
   },
   "devDependencies": {
     "babel-plugin-transform-async-to-generator": "6.22.0",
@@ -67,8 +57,8 @@
       "electronInstallerDebian": {},
       "electronInstallerRedhat": {},
       "github_repository": {
-        "owner": "",
-        "name": ""
+        "owner": "choxi",
+        "name": "haiku"
       },
       "windowsStoreConfig": {
         "packageName": ""
