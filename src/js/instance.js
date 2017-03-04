@@ -4,6 +4,7 @@ const app           = remote.getGlobal("app")
 const EventEmitter  = require('events')
 const path          = require('path')
 const GithubApi     = require("github")
+const NodeSSH       = require("node-ssh")
 
 var AWS     = require("aws-sdk")
 var uuid    = require("uuid/v4")
@@ -184,7 +185,6 @@ class Instance extends EventEmitter {
   setupGit() {
     log.info("Setup Git")
     return new Promise((resolve, reject) => {
-      let NodeSSH = require("node-ssh")
       let config = {
         host: this.reservation.Instances[0].PublicIpAddress,
         username: 'ec2-user',
