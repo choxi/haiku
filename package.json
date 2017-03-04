@@ -11,6 +11,7 @@
     "electron-log": "",
     "electron-oauth-github": "file:///Users/Choxi/Code/electron-oauth-github",
     "electron-updater": "",
+    "github": "9.1.0",
     "glob": "",
     "node-ssh": "4.0.1",
     "progressbar.js": "1.0.1",

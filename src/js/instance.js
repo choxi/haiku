@@ -181,6 +181,7 @@ class Instance extends EventEmitter {
   }
 
   setupGit() {
+    log.info("Setup Git")
     return new Promise((resolve, reject) => {
       let NodeSSH = require("node-ssh")
       let config = {
@@ -191,10 +192,23 @@ class Instance extends EventEmitter {
       let ssh = new NodeSSH()
 
       ssh.connect(config).then(() => {
-        ssh.exec("ssh-keygen -t rsa -N '' -f ~/.ssh/haiku").then((response) => {
+        ssh.exec("rm ~/.ssh/haiku 2> /dev/null*; ssh-keygen -t rsa -N '' -f ~/.ssh/haiku").then((response) => {
           ssh.exec("cat ~/.ssh/haiku.pub").then((response) => {
             log.info(response)
-            resolve()
+            let GithubApi = require("github")
+            let github = new GithubApi()
+
+            github.authenticate({
+              type: "oauth",
+              token: fs.readFileSync(this.appDataPath() + "/.github_access_token").toString()
+            })
+
+            github.users.createKey({
+              title: "Haiku",
+              key: response 
+            }, (error, response) => {
+              resolve()
+            })
           })
         })
       })
