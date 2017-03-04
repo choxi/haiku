@@ -20,7 +20,7 @@ function login() {
   let github = new OauthGithub({
     id: config.github.client_id,
     secret: config.github.client_secret,
-    scopes: [],
+    scopes: ["write:public_key"],
   })
 
   let tokenPath = path.join(app.getPath("appData"), "haiku", ".github_access_token")
