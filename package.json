@@ -12,6 +12,7 @@
     "electron-oauth-github": "git+ssh://git@github.com/choxi/electron-oauth-github.git",
     "electron-updater": "",
     "glob": "",
+    "node-ssh": "4.0.1",
     "progressbar.js": "1.0.1",
     "pty": "",
     "react": "",

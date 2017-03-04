@@ -31,6 +31,7 @@ class Instance extends EventEmitter {
     this.findOrCreateKey().then(this.startInstance.bind(this))
                           .then(() => { this.pollInstanceState("running") })
                           .then(this.pollSSHConnection.bind(this))
+                          .then(this.setupGit.bind(this))
                           .then(function() { log.info("Done") })
   }
   
@@ -177,6 +178,27 @@ class Instance extends EventEmitter {
         }
       })
     }.bind(this))
+  }
+
+  setupGit() {
+    return new Promise((resolve, reject) => {
+      let NodeSSH = require("node-ssh")
+      let config = {
+        host: this.reservation.Instances[0].PublicIpAddress,
+        username: 'ec2-user',
+        privateKey: fs.readFileSync(this.keyPath()).toString()
+      }
+      let ssh = new NodeSSH()
+
+      ssh.connect(config).then(() => {
+        ssh.exec("ssh-keygen -t rsa -N '' -f ~/.ssh/haiku").then((response) => {
+          ssh.exec("cat ~/.ssh/haiku.pub").then((response) => {
+            log.info(response)
+            resolve()
+          })
+        })
+      })
+    })
   }
 }
 
