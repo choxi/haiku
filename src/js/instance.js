@@ -3,6 +3,7 @@ const remote        = electron.remote
 const app           = remote.getGlobal("app")
 const EventEmitter  = require('events')
 const path          = require('path')
+const GithubApi     = require("github")
 
 var AWS     = require("aws-sdk")
 var uuid    = require("uuid/v4")
@@ -194,8 +195,6 @@ class Instance extends EventEmitter {
       ssh.connect(config).then(() => {
         ssh.exec("rm ~/.ssh/haiku 2> /dev/null*; ssh-keygen -t rsa -N '' -f ~/.ssh/haiku").then((response) => {
           ssh.exec("cat ~/.ssh/haiku.pub").then((response) => {
-            log.info(response)
-            let GithubApi = require("github")
             let github = new GithubApi()
 
             github.authenticate({
