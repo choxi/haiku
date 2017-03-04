@@ -28,6 +28,7 @@ function login() {
 
   if(fs.existsSync(tokenPath)) {
     token = fs.readFileSync(tokenPath) 
+    app.on("ready", createWindow)
   } else {
     github.startRequest(function(access_token, err) {
       if (err) log.error(err)
