@@ -185,31 +185,50 @@ class Instance extends EventEmitter {
   setupGit() {
     log.info("Setup Git")
     return new Promise((resolve, reject) => {
-      let config = {
+      let ssh     = new NodeSSH()
+      let github  = new GithubApi()
+      let sshConfig  = {
         host: this.reservation.Instances[0].PublicIpAddress,
         username: 'ec2-user',
         privateKey: fs.readFileSync(this.keyPath()).toString()
       }
-      let ssh = new NodeSSH()
 
-      ssh.connect(config).then(() => {
-        ssh.exec("rm ~/.ssh/haiku 2> /dev/null*; ssh-keygen -t rsa -N '' -f ~/.ssh/haiku").then((response) => {
-          ssh.exec("cat ~/.ssh/haiku.pub").then((response) => {
-            let github = new GithubApi()
+      github.authenticate({
+        type: "oauth",
+        token: fs.readFileSync(this.appDataPath() + "/.github_access_token").toString()
+      })
+      
+      github.users.getKeys({}, (error, response) => {
+        let keyExists = false
+        response.data.forEach((key) => {
+          if(key.title === "Haiku") {
+            keyExists = true
+          }
+        })
 
-            github.authenticate({
-              type: "oauth",
-              token: fs.readFileSync(this.appDataPath() + "/.github_access_token").toString()
-            })
+        if(keyExists) {
+          log.info("Key exists.")
+          resolve()
+        } else {
+          log.info("Creating a new key")
+          ssh.connect(sshConfig).then(() => {
+            ssh.exec("rm ~/.ssh/haiku 2> /dev/null*; ssh-keygen -t rsa -N '' -f ~/.ssh/haiku").then((response) => {
+              ssh.exec("cat ~/.ssh/haiku.pub").then((response) => {
+                github.authenticate({
+                  type: "oauth",
+                  token: fs.readFileSync(this.appDataPath() + "/.github_access_token").toString()
+                })
 
-            github.users.createKey({
-              title: "Haiku",
-              key: response 
-            }, (error, response) => {
-              resolve()
+                github.users.createKey({
+                  title: "Haiku",
+                  key: response 
+                }, (error, response) => {
+                  resolve()
+                })
+              })
             })
           })
-        })
+        }
       })
     })
   }
