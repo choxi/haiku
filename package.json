@@ -53,7 +53,10 @@
           "rpm"
         ]
       },
-      "electronPackagerConfig": {},
+      "electronPackagerConfig": {
+        "osx-sign": true,
+        "icon": "./src/images/logo"
+      },
       "electronWinstallerConfig": {
         "name": ""
       },
