@@ -3,7 +3,6 @@ const remote        = electron.remote
 const app           = remote.getGlobal("app")
 const EventEmitter  = require('events')
 const path          = require('path')
-const GithubApi     = require("github")
 const NodeSSH       = require("node-ssh")
 
 var AWS     = require("aws-sdk")
@@ -185,50 +184,31 @@ class Instance extends EventEmitter {
   setupGit() {
     log.info("Setup Git")
     return new Promise((resolve, reject) => {
-      let ssh     = new NodeSSH()
-      let github  = new GithubApi()
+      let ssh             = new NodeSSH()
+      let accessTokenPath = app.getPath("appData") + "/Haiku/.github_access_token"
+      let github          = new Github(fs.readFileSync(accessTokenPath))
+      let keyName         = "Haiku-" + this.params.name 
+
       let sshConfig  = {
         host: this.reservation.Instances[0].PublicIpAddress,
         username: 'ec2-user',
         privateKey: fs.readFileSync(this.keyPath()).toString()
       }
 
-      github.authenticate({
-        type: "oauth",
-        token: fs.readFileSync(this.appDataPath() + "/.github_access_token").toString()
-      })
-      
-      github.users.getKeys({}, (error, response) => {
-        let keyExists = false
-        response.data.forEach((key) => {
-          if(key.title === "Haiku") {
-            keyExists = true
-          }
-        })
-
-        if(keyExists) {
-          log.info("Key exists.")
-          resolve()
-        } else {
-          log.info("Creating a new key")
-          ssh.connect(sshConfig).then(() => {
-            ssh.exec("rm ~/.ssh/haiku 2> /dev/null*; ssh-keygen -t rsa -N '' -f ~/.ssh/haiku").then((response) => {
-              ssh.exec("cat ~/.ssh/haiku.pub").then((response) => {
-                github.authenticate({
-                  type: "oauth",
-                  token: fs.readFileSync(this.appDataPath() + "/.github_access_token").toString()
-                })
-
-                github.users.createKey({
-                  title: "Haiku",
-                  key: response 
-                }, (error, response) => {
-                  resolve()
+      ssh.connect(sshConfig).then(() => {
+        ssh.execCommand(`cat ~/.ssh/${keyName}.pub`).then((result) => {
+          if(result.stdout) github.findOrCreateKey(keyName, result.stdout).then(resolve)
+          else {
+            log.info("Creating a new key")
+            ssh.connect(sshConfig).then(() => {
+              ssh.exec(`rm ~/.ssh/${keyName}* 2> /dev/null*; ssh-keygen -t rsa -N '' -f ~/.ssh/${keyName} && sudo echo 'Host github.com\n  IdentityFile ~/.ssh/${keyName}' >> ~/.ssh/config && chmod 600 ~/.ssh/config`).then((response) => {
+                ssh.exec(`cat ~/.ssh/${keyName}.pub`).then((response) => {
+                  github.findOrCreateKey(keyName, response).then(resolve)
                 })
               })
             })
-          })
-        }
+          }
+        })
       })
     })
   }
@@ -259,6 +239,51 @@ function instancesInState(reservation, state) {
   }
 
   return ready
+}
+
+const GithubApi = require("github")
+
+class Github {
+  constructor(access_token) {
+    this.access_token = access_token
+  }
+
+  findOrCreateKey(keyName, keyValue) {
+    return new Promise((resolve, reject) => {
+      let api = new GithubApi()
+
+      api.authenticate({
+        type: "oauth",
+        token: this.access_token 
+      })
+
+      api.users.getKeys({}, (error, response) => {
+        let keyExists = false
+        response.data.forEach((key) => {
+          if(key.title === keyName) {
+            keyExists = true
+          }
+        })
+
+        if(keyExists) {
+          log.info("Key exists.")
+          resolve()
+        } else {
+          api.authenticate({
+            type: "oauth",
+            token: this.access_token 
+          })
+
+          api.users.createKey({
+            title:  keyName,
+            key:    keyValue 
+          }, (error, response) => {
+            resolve()
+          })
+        }
+      })
+    }) 
+  }
 }
 
 module.exports = Instance 
