@@ -202,7 +202,7 @@ class Instance extends EventEmitter {
           else {
             log.info("Creating a new key")
             ssh.connect(sshConfig).then(() => {
-              ssh.exec(`rm ~/.ssh/${keyName}* 2> /dev/null*; ssh-keygen -t rsa -N '' -f ~/.ssh/${keyName} && sudo echo 'Host github.com\n  IdentityFile ~/.ssh/${keyName}' >> ~/.ssh/config && chmod 600 ~/.ssh/config`).then((response) => {
+              ssh.exec(`rm ~/.ssh/${keyName}* 2> /dev/null*; ssh-keygen -t rsa -N '' -f ~/.ssh/${keyName} && echo 'Host github.com\n  IdentityFile ~/.ssh/${keyName}' >> ~/.ssh/config && chmod 600 ~/.ssh/config`).then((response) => {
                 ssh.exec(`cat ~/.ssh/${keyName}.pub`).then((response) => {
                   github.findOrCreateKey(keyName, response).then(resolve)
                 })
