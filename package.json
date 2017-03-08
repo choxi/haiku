@@ -9,7 +9,7 @@
     "aws-sdk": "",
     "electron-compile": "6.1.2",
     "electron-log": "",
-    "electron-oauth-github": "file:///Users/Choxi/Code/electron-oauth-github",
+    "electron-oauth-github": "git+https://github.com/choxi/electron-oauth-github.git",
     "electron-updater": "",
     "github": "9.1.0",
     "glob": "",
