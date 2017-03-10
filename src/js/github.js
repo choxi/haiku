@@ -1,4 +1,5 @@
 const GithubApi = require("github")
+const log       = require('electron-log')
 
 class Github {
   constructor(access_token) {
