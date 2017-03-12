@@ -13,7 +13,6 @@ class OpenMenu extends React.Component {
     this.selectedClasses      = this.selectedClasses.bind(this)
     this.disableCreateButton  = this.disableCreateButton.bind(this)
     this.disableOpenButton    = this.disableOpenButton.bind(this)
-    this.updateName           = this.updateName.bind(this)
 
 		this.state = { 
 			selection: {
@@ -66,10 +65,6 @@ class OpenMenu extends React.Component {
     this.props.onSelect(params)
   }
   
-  updateName(event) {
-    this.setState({name: event.target.value})
-  }
-
   disableCreateButton() {
     return !this.state.selection.ami || !this.state.name || this.state.name === ""
   }
@@ -109,11 +104,6 @@ class OpenMenu extends React.Component {
         {selectInstance}
         <NewMenu />
         <div className="new-instance">
-          <h3> Create a New Instance </h3>
-          <p>
-            <label htmlFor="name">Name</label>
-            <input name="name" ref="name" type="text" maxLength="100" onChange={this.updateName} />
-          </p>
           <div className="stacks">
             <p><label>Stack</label></p>
             <div className={"ruby " + this.selectedClasses("ami-970eead3") } data-ami="ami-970eead3" onClick={this.select}>
