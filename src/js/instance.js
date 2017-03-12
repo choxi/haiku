@@ -215,7 +215,11 @@ class Instance extends EventEmitter {
   }
 
   terminate() {
-    log.info("Terminate")
+    let ids = this.instanceIds(this.params.reservation)
+    this.ec2.terminateInstances({InstanceIds: ids, DryRun: true}, (err, data) => {
+      if(err) log.error(err)
+      if(data) log.info(data)
+    })
   }
 }
 
