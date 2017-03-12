@@ -216,13 +216,16 @@ class Instance extends EventEmitter {
   }
 
   terminate() {
-    let ids = this.instanceIds(this.params.reservation)
-    this.ec2.terminateInstances({InstanceIds: ids}, (err, data) => {
-      if(err) log.error(err)
-      log.info(`Terminated Instance: ${this.params.name}`)
+    return new Promise((resolve, reject) => {
+      let ids = this.instanceIds(this.params.reservation)
+      this.ec2.terminateInstances({InstanceIds: ids}, (err, data) => {
+        if(err) log.error(err)
+        log.info(`Terminated Instance: ${this.params.name}`)
 
-      Reservation.destroy(this.params.name)
-    })
+        Reservation.destroy(this.params.name)
+        resolve()
+      })
+   })
   }
 }
 

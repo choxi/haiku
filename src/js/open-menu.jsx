@@ -13,8 +13,9 @@ class OpenMenu extends React.Component {
     this.selectedClasses      = this.selectedClasses.bind(this)
     this.disableOpenButton    = this.disableOpenButton.bind(this)
 
-    this.state = { 
-      reservation: null
+    this.state = {
+      reservation: null,
+      reservations: Reservation.all()
     }
   }
 
@@ -47,7 +48,7 @@ class OpenMenu extends React.Component {
 
     this.props.onSelect(params)
   }
-  
+
   disableOpenButton() {
     return !this.state.reservation
   }
@@ -58,11 +59,13 @@ class OpenMenu extends React.Component {
     let reservation   = Reservation.find(reservationId)
     let instance      = new Instance({reservation: reservation, name: reservationId})
 
-    instance.terminate()
+    instance.terminate().then(() => {
+      this.setState({ reservations: Reservation.all(), reservation: null })
+    })
   }
-  
+
   render() {
-    let reservations = Reservation.all()
+    let reservations = this.state.reservations
     let mappedReservations
 
     if(Object.keys(reservations).length !== 0) {
