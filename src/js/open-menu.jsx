@@ -3,6 +3,7 @@ const ReactDOM    = require("react-dom")
 const fs          = require("fs")
 const app         = require('electron').remote.getGlobal("app")
 const Reservation = require("./reservation.js")
+const NewMenu     = require("./new-menu.jsx")
 
 class OpenMenu extends React.Component {
   constructor() {
@@ -106,6 +107,7 @@ class OpenMenu extends React.Component {
     return (
       <div className="select-stack">
         {selectInstance}
+        <NewMenu />
         <div className="new-instance">
           <h3> Create a New Instance </h3>
           <p>
