@@ -8,23 +8,21 @@ const NewMenu     = require("./new-menu.jsx")
 class OpenMenu extends React.Component {
   constructor() {
     super()
-    this.select 		          = this.select.bind(this)
-    this.create 		          = this.create.bind(this)
+    this.select               = this.select.bind(this)
+    this.create               = this.create.bind(this)
     this.selectedClasses      = this.selectedClasses.bind(this)
     this.disableCreateButton  = this.disableCreateButton.bind(this)
     this.disableOpenButton    = this.disableOpenButton.bind(this)
 
-		this.state = { 
-			selection: {
-				ami: null,
-				reservation: null
-			}
+    this.state = { 
+      selection: {
+        reservation: null
+      }
     }
   }
 
   select(event) {
     let target        = event.currentTarget
-    let ami           = target.getAttribute("data-ami")
     let reservationId = target.getAttribute("data-reservation")
     let reservation
 
@@ -32,13 +30,11 @@ class OpenMenu extends React.Component {
       reservation = Reservation.find(reservationId)
     }
 
-    this.setState({selection: {ami: ami, reservation: reservationId}})
+    this.setState({selection: {reservation: reservationId}})
   }
 
   selectedClasses(value) {
-		if(!!this.state.selection.ami && (value === this.state.selection.ami)) {
-			return "selected"
-		} else if(!!this.state.selection.reservation && (value === this.state.selection.reservation)) {
+    if(!!this.state.selection.reservation && (value === this.state.selection.reservation)) {
       return "selected"
     } else {
       return ""
@@ -104,21 +100,6 @@ class OpenMenu extends React.Component {
         {selectInstance}
         <NewMenu />
         <div className="new-instance">
-          <div className="stacks">
-            <p><label>Stack</label></p>
-            <div className={"ruby " + this.selectedClasses("ami-970eead3") } data-ami="ami-970eead3" onClick={this.select}>
-              <img src="./images/icon-ruby.png" />
-              <p> Ruby </p>
-            </div>
-            <div className={"javascript " + this.selectedClasses("ami-165a0876")} data-ami="ami-165a0876" onClick={this.select}>
-              <img src="./images/icon-javascript.png" />
-              <p> Node </p>
-            </div>
-            <div className={"tensorflow " + this.selectedClasses("ami-54f2bc34")} data-ami="ami-54f2bc34" onClick={this.select}>
-              <img src="./images/icon-tensorflow.png" />
-              <p> Tensorflow </p>
-            </div>
-          </div>
           <button disabled={this.disableCreateButton()} onClick={this.create} >Create</button>
         </div>
       </div>
