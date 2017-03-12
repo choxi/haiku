@@ -1,9 +1,11 @@
 class NewMenu extends React.Component {
   constructor() {
     super()
-    this.updateName       = this.updateName.bind(this)
-    this.selectedClasses  = this.selectedClasses.bind(this)
-    this.select           = this.select.bind(this)
+    this.create               = this.create.bind(this)
+    this.select               = this.select.bind(this)
+    this.updateName           = this.updateName.bind(this)
+    this.selectedClasses      = this.selectedClasses.bind(this)
+    this.disableCreateButton  = this.disableCreateButton.bind(this)
 
     this.state = {
       name: null,
@@ -30,6 +32,19 @@ class NewMenu extends React.Component {
     this.setState({name: event.target.value})
   }
 
+  disableCreateButton() {
+    return !this.state.ami || !this.state.name || this.state.name === ""
+  }
+
+  create(event) {
+    let params = {
+      name: this.state.name,
+      ami:  this.state.ami
+    }
+
+    this.props.onSelect(params)
+  }
+
   render() {
     return (
       <div className="new-instance">
@@ -52,6 +67,10 @@ class NewMenu extends React.Component {
             <img src="./images/icon-tensorflow.png" />
             <p> Tensorflow </p>
           </div>
+        </div>
+
+        <div className="new-instance">
+          <button disabled={this.disableCreateButton()} onClick={this.create} >Create</button>
         </div>
       </div>
     )
