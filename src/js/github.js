@@ -12,7 +12,7 @@ class Github {
 
       api.authenticate({
         type: "oauth",
-        token: this.access_token 
+        token: this.access_token
       })
 
       api.users.getKeys({}, (error, response) => {
@@ -29,18 +29,34 @@ class Github {
         } else {
           api.authenticate({
             type: "oauth",
-            token: this.access_token 
+            token: this.access_token
           })
 
           api.users.createKey({
             title:  keyName,
-            key:    keyValue 
+            key:    keyValue
           }, (error, response) => {
             resolve()
           })
         }
       })
-    }) 
+    })
+  }
+
+  deleteKey(keyName) {
+    return new Promise((resolve, reject) => {
+      api.authenticate({
+        type: "oauth",
+        token: this.access_token
+      })
+
+      api.users.deleteKey({
+        id:  keyName,
+      }, (error, response) => {
+        if(error) log.error(error)
+        resolve()
+      })
+    })
   }
 }
 
