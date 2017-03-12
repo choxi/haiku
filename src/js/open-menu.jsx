@@ -8,6 +8,7 @@ class OpenMenu extends React.Component {
     super()
     this.select               = this.select.bind(this)
     this.create               = this.create.bind(this)
+    this.delete               = this.delete.bind(this)
     this.selectedClasses      = this.selectedClasses.bind(this)
     this.disableOpenButton    = this.disableOpenButton.bind(this)
 
@@ -49,6 +50,10 @@ class OpenMenu extends React.Component {
   disableOpenButton() {
     return !this.state.reservation
   }
+
+  delete() {
+    console.log("Delete")
+  }
   
   render() {
     let reservations = Reservation.all()
@@ -56,7 +61,13 @@ class OpenMenu extends React.Component {
 
     if(Object.keys(reservations).length !== 0) {
       mappedReservations = Object.keys(reservations).map((key) => {
-        return (<tr className={this.selectedClasses(key)} onClick={this.select} data-reservation={key} key={key}><td>{key}</td><td>Feb 24, 2017</td></tr>)
+        return (
+          <tr className={this.selectedClasses(key)} onClick={this.select} data-reservation={key} key={key}>
+            <td>{key}</td>
+            <td>Feb 24, 2017</td>
+            <td onClick={this.delete}>Delete</td>
+          </tr>
+        )
       })
     }
 
@@ -67,7 +78,7 @@ class OpenMenu extends React.Component {
 
           <table className="select-instance">
             <tbody>
-              <tr><th>Name</th><th>Created</th></tr>
+              <tr><th>Name</th><th>Created</th><th>Actions</th></tr>
               { mappedReservations }
             </tbody>
           </table>
