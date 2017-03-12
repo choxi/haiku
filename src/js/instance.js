@@ -5,6 +5,7 @@ const EventEmitter  = require('events')
 const path          = require('path')
 const NodeSSH       = require("node-ssh")
 const Github        = require("./github.js")
+const Reservation   = require("./reservation.js")
 
 var AWS     = require("aws-sdk")
 var uuid    = require("uuid/v4")
@@ -216,9 +217,11 @@ class Instance extends EventEmitter {
 
   terminate() {
     let ids = this.instanceIds(this.params.reservation)
-    this.ec2.terminateInstances({InstanceIds: ids, DryRun: true}, (err, data) => {
+    this.ec2.terminateInstances({InstanceIds: ids}, (err, data) => {
       if(err) log.error(err)
-      if(data) log.info(data)
+      log.info(`Terminated Instance: ${this.params.name}`)
+
+      Reservation.destroy(this.params.name)
     })
   }
 }

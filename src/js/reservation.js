@@ -9,6 +9,15 @@ Reservation.find = function(id) {
   return reservations[id]
 }
 
+Reservation.destroy = function(id) {
+  let path         = app.getPath("appData") + "/Haiku/reservations.json"
+  let reservations = this.all()
+
+  delete reservations[id]
+
+  fs.writeFileSync(path, JSON.stringify(reservations))
+}
+
 Reservation.all = function() {
   let path          = app.getPath("appData") + "/Haiku/reservations.json"
   let reservations  = {}

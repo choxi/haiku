@@ -56,7 +56,7 @@ class OpenMenu extends React.Component {
     let target        = event.currentTarget.parentElement
     let reservationId = target.getAttribute("data-reservation")
     let reservation   = Reservation.find(reservationId)
-    let instance      = new Instance({reservation: reservation})
+    let instance      = new Instance({reservation: reservation, name: reservationId})
 
     instance.terminate()
   }
