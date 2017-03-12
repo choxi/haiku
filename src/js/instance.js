@@ -22,6 +22,9 @@ class Instance extends EventEmitter {
     this.params = params
     this.ec2    = new AWS.EC2(config.ec2)
 
+    let accessTokenPath = app.getPath("appData") + "/Haiku/.github_access_token"
+    this.github         = new Github(fs.readFileSync(accessTokenPath))
+
     return this
   }
 
@@ -187,8 +190,6 @@ class Instance extends EventEmitter {
     log.info("Setup Git")
     return new Promise((resolve, reject) => {
       let ssh             = new NodeSSH()
-      let accessTokenPath = app.getPath("appData") + "/Haiku/.github_access_token"
-      let github          = new Github(fs.readFileSync(accessTokenPath))
       let keyName         = "Haiku-" + this.params.name 
 
       let sshConfig  = {
@@ -199,13 +200,13 @@ class Instance extends EventEmitter {
 
       ssh.connect(sshConfig).then(() => {
         ssh.execCommand(`cat ~/.ssh/${keyName}.pub`).then((result) => {
-          if(result.stdout) github.findOrCreateKey(keyName, result.stdout).then(resolve)
+          if(result.stdout) this.github.findOrCreateKey(keyName, result.stdout).then(resolve)
           else {
             log.info("Creating a new key")
             ssh.connect(sshConfig).then(() => {
               ssh.exec(`rm ~/.ssh/${keyName}* 2> /dev/null*; ssh-keygen -t rsa -N '' -f ~/.ssh/${keyName} && echo 'Host github.com\n  IdentityFile ~/.ssh/${keyName}' >> ~/.ssh/config && chmod 600 ~/.ssh/config`).then((response) => {
                 ssh.exec(`cat ~/.ssh/${keyName}.pub`).then((response) => {
-                  github.findOrCreateKey(keyName, response).then(resolve)
+                  this.github.findOrCreateKey(keyName, response).then(resolve)
                 })
               })
             })
