@@ -213,6 +213,10 @@ class Instance extends EventEmitter {
       })
     })
   }
+
+  terminate() {
+    log.info("Terminate")
+  }
 }
 
 function poll(callback) {

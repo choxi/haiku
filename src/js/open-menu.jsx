@@ -2,6 +2,7 @@ const React       = require("react")
 const ReactDOM    = require("react-dom")
 const Reservation = require("./reservation.js")
 const NewMenu     = require("./new-menu.jsx")
+const Instance    = require("./instance.js")
 
 class OpenMenu extends React.Component {
   constructor() {
@@ -51,8 +52,13 @@ class OpenMenu extends React.Component {
     return !this.state.reservation
   }
 
-  delete() {
-    console.log("Delete")
+  delete(event) {
+    let target        = event.currentTarget.parentElement
+    let reservationId = target.getAttribute("data-reservation")
+    let reservation   = Reservation.find(reservationId)
+    let instance      = new Instance({reservation: reservation})
+
+    instance.terminate()
   }
   
   render() {
