@@ -224,7 +224,7 @@ class Instance extends EventEmitter {
         log.info(`Terminated Instance: ${this.params.name}`)
 
         Reservation.destroy(this.params.name)
-        resolve()
+        this.github.deleteKey("Haiku-" + this.params.name).then(resolve)
       })
    })
   }
