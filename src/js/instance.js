@@ -54,7 +54,7 @@ class Instance extends EventEmitter {
       } else {
         let p = {
           ImageId: this.params.ami,
-          InstanceType: "t2.micro",
+          InstanceType: this.params.instanceType,
           MaxCount: 1,
           MinCount: 1,
           KeyName: keyName,
