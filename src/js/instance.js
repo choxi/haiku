@@ -40,7 +40,7 @@ class Instance extends EventEmitter {
                           .then(this.setupGit.bind(this))
                           .then(function() { log.info("Done") })
   }
-  
+
   startInstance(keyName) {
     return new Promise((resolve, reject) => {
       if(this.params.reservation) {
@@ -150,7 +150,7 @@ class Instance extends EventEmitter {
   keyPath() {
     return this.appDataPath() + "/" + this.keyName + ".pem"
   }
-  
+
   appDataPath() {
     return app.getPath("appData") + "/Haiku"
   }
@@ -168,7 +168,7 @@ class Instance extends EventEmitter {
         timeout: 1000
       }
       let ssh = new SSH(config)
- 
+
       ssh.exec("exit").start({
         success: () => {
           log.info("Instance Ready")
@@ -190,7 +190,7 @@ class Instance extends EventEmitter {
     log.info("Setup Git")
     return new Promise((resolve, reject) => {
       let ssh             = new NodeSSH()
-      let keyName         = "Haiku-" + this.params.name 
+      let keyName         = "Haiku-" + this.params.name.replace(/ /g, "")
 
       let sshConfig  = {
         host: this.reservation.Instances[0].PublicIpAddress,
@@ -204,7 +204,12 @@ class Instance extends EventEmitter {
           else {
             log.info("Creating a new key")
             ssh.connect(sshConfig).then(() => {
-              ssh.exec(`rm ~/.ssh/${keyName}* 2> /dev/null*; ssh-keygen -t rsa -N '' -f ~/.ssh/${keyName} && echo 'Host github.com\n  IdentityFile ~/.ssh/${keyName}' >> ~/.ssh/config && chmod 600 ~/.ssh/config`).then((response) => {
+              let command = `rm ~/.ssh/${keyName}* 2> /dev/null*;` +
+                            `ssh-keygen -t rsa -N '' -f ~/.ssh/${keyName}` +
+                            `&& echo 'Host github.com\n  IdentityFile ~/.ssh/${keyName}'` +
+                            ` >> ~/.ssh/config && chmod 600 ~/.ssh/config`
+
+              ssh.exec(command).then((response) => {
                 ssh.exec(`cat ~/.ssh/${keyName}.pub`).then((response) => {
                   this.github.findOrCreateKey(keyName, response).then(resolve)
                 })
@@ -240,7 +245,7 @@ function poll(callback) {
           setTimeout(_poll, 1000)
         }
       })
-    } 
+    }
 
     _poll()
   })
@@ -257,4 +262,4 @@ function instancesInState(reservation, state) {
   return ready
 }
 
-module.exports = Instance 
+module.exports = Instance
