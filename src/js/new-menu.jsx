@@ -4,12 +4,15 @@ class NewMenu extends React.Component {
     this.create               = this.create.bind(this)
     this.select               = this.select.bind(this)
     this.updateName           = this.updateName.bind(this)
+    this.updateInstanceType   = this.updateInstanceType.bind(this)
     this.selectedClasses      = this.selectedClasses.bind(this)
     this.disableCreateButton  = this.disableCreateButton.bind(this)
+    this.instanceTypeOptions  = ["t1.micro", "g2.2xlarge"]
 
     this.state = {
       name: null,
-      ami: null
+      ami: null,
+      instanceType: this.instanceTypeOptions[0]
     }
   }
 
@@ -32,6 +35,10 @@ class NewMenu extends React.Component {
     this.setState({name: event.target.value})
   }
 
+  updateInstanceType(event) {
+    this.setState({instanceType: event.target.value})
+  }
+
   disableCreateButton() {
     return !this.state.ami || !this.state.name || this.state.name === ""
   }
@@ -39,13 +46,20 @@ class NewMenu extends React.Component {
   create(event) {
     let params = {
       name: this.state.name,
-      ami:  this.state.ami
+      ami:  this.state.ami,
+      instanceType: this.state.instanceType
     }
 
     this.props.onSelect(params)
   }
 
   render() {
+    let instanceOptions = this.instanceTypeOptions.map((type) => {
+      return (
+        <option value={type} key={type}>{type}</option>
+      )
+    })
+
     return (
       <div className="new-instance">
         <h3> Create a New Instance </h3>
@@ -68,6 +82,12 @@ class NewMenu extends React.Component {
             <p> Tensorflow </p>
           </div>
         </div>
+        <p>
+          <label>Instance Type  </label>
+          <select onChange={this.updateInstanceType}>
+            { instanceOptions }
+          </select>
+        </p>
 
         <div className="new-instance">
           <button disabled={this.disableCreateButton()} onClick={this.create} >Create</button>
