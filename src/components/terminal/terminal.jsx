@@ -1,6 +1,6 @@
 import React        from "react"
 import ProgressBar  from "progressbar.js"
-import Instance     from "../lib/instance.js"
+import Instance     from "../../lib/instance.js"
 import Xterm        from "xterm"
 Xterm.loadAddon("fit")
 

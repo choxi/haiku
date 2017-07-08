@@ -1,8 +1,8 @@
 import React       from "react"
 import ReactDOM    from "react-dom"
-import Reservation from "../lib/reservation.js"
 import NewMenu     from "./new-menu.jsx"
-import Instance    from "../lib/instance.js"
+import Reservation from "../../lib/reservation.js"
+import Instance    from "../../lib/instance.js"
 
 export default class Menu extends React.Component {
   constructor() {

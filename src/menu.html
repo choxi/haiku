@@ -3,15 +3,14 @@
   <head>
     <meta charset="UTF-8">
     <title>Haiku</title>
-    <link rel="stylesheet" type="text/css" href="./css/application.css">
-    <link rel="stylesheet" type="text/css" href="./css/components/menu.sass">
+    <link rel="stylesheet" type="text/css" href="./components/menu/menu.sass">
   </head>
   <body>
     <div id="menu"> </div>
     <script>
       import React            from "react"
       import ReactDOM         from "react-dom"
-      import Menu             from "./components/menu.jsx"
+      import Menu             from "./components/menu/menu.jsx"
       import { ipcRenderer }  from "electron"
 
       function createInstance(params) {

@@ -3,9 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Haiku</title>
-    <link rel="stylesheet" type="text/css" href="./css/application.css">
-    <link rel="stylesheet" type="text/css" href="./css/xterm.css">
-    <link rel="stylesheet" type="text/css" href="./css/xterm-overrides.css">
+    <link rel="stylesheet" type="text/scss" href="./components/terminal/terminal.scss">
   </head>
   <body>
     <div id="terminal"> </div>
@@ -13,7 +11,7 @@
       import React            from "react"
       import ReactDOM         from "react-dom"
       import { ipcRenderer }  from "electron"
-      import Terminal         from "./components/terminal"
+      import Terminal         from "./components/terminal/terminal.jsx"
 
       ipcRenderer.on("open-instance", (event, params) => {
         ReactDOM.render(<Terminal params={ params }/>, document.getElementById("terminal"))

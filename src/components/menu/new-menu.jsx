@@ -72,15 +72,15 @@ export default class NewMenu extends React.Component {
         <div className="stacks">
           <p><label>Stack</label></p>
           <div className={"ruby " + this.selectedClasses("ami-970eead3") } data-ami="ami-970eead3" onClick={this.select}>
-            <img src="./images/icon-ruby.png" />
+            <img src="./components/menu/icon-ruby.png" />
             <p> Ruby </p>
           </div>
           <div className={"javascript " + this.selectedClasses("ami-165a0876")} data-ami="ami-165a0876" onClick={this.select}>
-            <img src="./images/icon-javascript.png" />
+            <img src="./components/menu/icon-javascript.png" />
             <p> Node </p>
           </div>
           <div className={"tensorflow " + this.selectedClasses("ami-54f2bc34")} data-ami="ami-54f2bc34" onClick={this.select}>
-            <img src="./images/icon-tensorflow.png" />
+            <img src="./components/menu/icon-tensorflow.png" />
             <p> Tensorflow </p>
           </div>
         </div>
