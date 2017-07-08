@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Haiku</title>
+    <link rel="stylesheet" type="text/css" href="./css/application.css">
+    <link rel="stylesheet" type="text/css" href="./css/components/open-menu.sass">
+  </head>
+  <body>
+    <div id="open-menu"> </div>
+    <script>
+      import React            from "react"
+      import ReactDOM         from "react-dom"
+      import OpenMenu         from "./js/open-menu.jsx"
+      import { ipcRenderer }  from "electron"
+
+      function createInstance(params) {
+        ipcRenderer.send("open-instance", params)
+      }
+
+      ReactDOM.render(
+        <OpenMenu onSelect={createInstance} />,
+        document.getElementById('open-menu')
+      )
+    </script>
+  </body>
+</html>

@@ -8,6 +8,8 @@ const log             = require("electron-log")
 const OauthGithub     = require('electron-oauth-github')
 const fs              = require("fs")
 
+import { ipcMain } from "electron"
+
 global.app = app
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -42,25 +44,29 @@ function login() {
 login()
 
 function createWindow () {
-  // Create the browser window.
+  function objectToParams(data) {
+    return Object.keys(data).map(key => `${key}=${encodeURIComponent(data[key])}`).join('&')
+  }
+
+  ipcMain.on("open-instance", (event, params) => {
+    let menu      = BrowserWindow.fromWebContents(event.sender)
+    let win       = new BrowserWindow({ width: 800, height: 600 })
+
+    win.loadURL(`file://${__dirname}/terminal.html`)
+    win.webContents.on("did-finish-load", () => {
+      win.webContents.send("open-instance", params)
+    })
+
+    menu.close()
+  })
+
   mainWindow = new BrowserWindow({
     icon: './images/Logo - Sunrise - Small - Blue.png',
     width: 600,
     height: 400
   })
 
-  // and load the index.html of the app.
-  mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'index.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
-
-  // Open the DevTools.
-  // BrowserWindow.addDevToolsExtension("/Users/Choxi/Library/Application Support/Google/Chrome/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/2.0.12_0")
-  // mainWindow.webContents.openDevTools()
-
-  // Emitted when the window is closed.
+  mainWindow.loadURL(`file://${__dirname}/menu.html`)
   mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time

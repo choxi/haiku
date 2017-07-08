@@ -1,3 +1,5 @@
+import React from 'react'
+
 class NewMenu extends React.Component {
   constructor() {
     super()
