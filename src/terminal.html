@@ -8,105 +8,17 @@
     <link rel="stylesheet" type="text/css" href="./css/xterm-overrides.css">
   </head>
   <body>
-    <div class="loading-screen">
-      <div class="progress-bar">
-        <div class="inner-bar"></div>
-        <div class="outer-bar"></div>
-        <div class="center"></div>
-        <div class="ripple-1"></div>
-        <div class="ripple-2"></div>
-        <div class="ripple-3"></div>
-      </div>
-      <p class="loading-status">Creating Instance...</p>
-    </div>
-    <div class="terminal-wrapper"></div>
+    <div id="terminal"> </div>
     <!-- In Electron, this is the correct way to include jQuery -->
     <script>window.$ = window.jQuery = require('./js/jquery-3.1.1.min.js');</script>
-    <script src="./js/xterm.js"></script>
-    <script src="./js/xterm-fit.js"></script>
     <script>
-      import ProgressBar      from "progressbar.js"
-      import Instance         from "./js/instance.js"
       import React            from "react"
       import ReactDOM         from "react-dom"
       import { ipcRenderer }  from "electron"
-
-      function createInstance(params) {
-        var instance = new Instance(params)
-
-        $(".select-stack").hide()
-        $(".loading-screen").show()
-
-        var innerProgress = new ProgressBar.SemiCircle('.progress-bar .inner-bar', {
-          strokeWidth: 20,
-          color: "#FF8000"
-        })
-
-        var outerProgress = new ProgressBar.SemiCircle('.progress-bar .outer-bar', {
-          strokeWidth: 14,
-          color: "#D0E162"
-        })
-
-        $(".loading-status").text("Creating Instance...")
-        innerProgress.animate(0.30, {duration: 40000})
-        outerProgress.animate(0.25, {duration: 40000})
-
-        instance.on("starting", function() {
-          innerProgress.animate(0.65, {duration: 17000});
-          outerProgress.animate(0.5, {duration: 17000});
-          $(".loading-status").text("Starting...")
-        })
-
-        instance.on("connecting", function() {
-          innerProgress.animate(0.95, {duration: 17000});
-          outerProgress.animate(0.75, {duration: 17000});
-          $(".loading-status").text("Connecting...")
-        })
-
-        var term = new Terminal({ cursorBlink: true });
-        term.open(document.getElementsByClassName('terminal-wrapper')[0])
-        term.fit()
-
-        instance.on("ready", function(keyPath, ipAddress) {
-          outerProgress.animate(1)
-          innerProgress.animate(1, function() {
-            $(".loading-screen").hide()
-            $(".terminal-wrapper").show()
-            term.fit();
-          }.bind(this))
-
-          var sshLogin        = "ec2-user@" + ipAddress;
-          var sshArgs         = ["-oStrictHostKeyChecking=no", "-i", keyPath, sshLogin];
-          var pty             = require('pty').spawn("ssh", sshArgs, { name: "xterm-256color" });
-
-          pty.on("data", function(data) {
-            term.write(data);
-          });
-
-          term.on("data", function(data) {
-            pty.write(data)
-          })
-
-          term.on('resize', function (size) {
-            pty.resize(size.cols, size.rows)
-          })
-
-          term.focus();
-        })
-
-        instance.create()
-
-        window.addEventListener("resize", term.fit.bind(term))
-        window.onbeforeunload = function(event) {
-          if(instance.status !== "stopped") {
-            event.returnValue = false
-            instance.remove(window.close.bind(window)) 
-          }
-        }
-      }
+      import Terminal         from "./components/terminal"
 
       ipcRenderer.on("open-instance", (event, params) => {
-        createInstance(params)
+        ReactDOM.render(<Terminal params={ params }/>, document.getElementById("terminal"))
       })
     </script>
   </body>
