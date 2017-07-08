@@ -18,7 +18,6 @@ html, body {
   bottom: 0;
   text-align: center;
   z-index: 1;
-  display: none;
 }
 
 .loading-screen h1 {

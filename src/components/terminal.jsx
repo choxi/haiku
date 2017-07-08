@@ -5,17 +5,10 @@ import Xterm        from "xterm"
 Xterm.loadAddon("fit")
 
 export default class Terminal extends React.Component {
-  constructor() {
-    super()
-    this.state = { loading: false }
-  }
-
   componentDidMount() {
-    let params    = this.props.params
-    var instance  = new Instance(params)
-
-    $(".select-stack").hide()
-    $(".loading-screen").show()
+    let params        = this.props.params
+    let instance      = new Instance(params)
+    let loadingStatus = document.getElementsByClassName("loading-status")
 
     var innerProgress = new ProgressBar.SemiCircle('.progress-bar .inner-bar', {
       strokeWidth: 20,
@@ -27,20 +20,20 @@ export default class Terminal extends React.Component {
       color: "#D0E162"
     })
 
-    $(".loading-status").text("Creating Instance...")
+    loadingStatus.textContent = "Creating Instance..."
     innerProgress.animate(0.30, {duration: 40000})
     outerProgress.animate(0.25, {duration: 40000})
 
     instance.on("starting", function() {
-      innerProgress.animate(0.65, {duration: 17000});
-      outerProgress.animate(0.5, {duration: 17000});
-      $(".loading-status").text("Starting...")
+      innerProgress.animate(0.65, {duration: 17000})
+      outerProgress.animate(0.5, {duration: 17000})
+      loadingStatus.textContent = "Starting..."
     })
 
     instance.on("connecting", function() {
-      innerProgress.animate(0.95, {duration: 17000});
-      outerProgress.animate(0.75, {duration: 17000});
-      $(".loading-status").text("Connecting...")
+      innerProgress.animate(0.95, {duration: 17000})
+      outerProgress.animate(0.75, {duration: 17000})
+      loadingStatus.textContent = "Connecting..."
     })
 
     var term = new Xterm({ cursorBlink: true });
@@ -50,8 +43,8 @@ export default class Terminal extends React.Component {
     instance.on("ready", function(keyPath, ipAddress) {
       outerProgress.animate(1)
       innerProgress.animate(1, function() {
-        $(".loading-screen").hide()
-        $(".terminal-wrapper").show()
+        document.getElementsByClassName("loading-screen")[0].style.display = "none"
+        document.getElementsByClassName("terminal-wrapper")[0].style.display = "block"
         term.fit();
       }.bind(this))
 
