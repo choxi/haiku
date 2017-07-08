@@ -1,10 +1,10 @@
-const React       = require("react")
-const ReactDOM    = require("react-dom")
-const Reservation = require("./reservation.js")
-const NewMenu     = require("./new-menu.jsx")
-const Instance    = require("./instance.js")
+import React       from "react"
+import ReactDOM    from "react-dom"
+import Reservation from "../lib/reservation.js"
+import NewMenu     from "./new-menu.jsx"
+import Instance    from "../lib/instance.js"
 
-class OpenMenu extends React.Component {
+export default class Menu extends React.Component {
   constructor() {
     super()
     this.select               = this.select.bind(this)
@@ -99,5 +99,3 @@ class OpenMenu extends React.Component {
     )
   }
 }
-
-module.exports = OpenMenu

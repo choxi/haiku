@@ -1,6 +1,6 @@
 import React from 'react'
 
-class NewMenu extends React.Component {
+export default class NewMenu extends React.Component {
   constructor() {
     super()
     this.create               = this.create.bind(this)
@@ -98,5 +98,3 @@ class NewMenu extends React.Component {
     )
   }
 }
-
-module.exports = NewMenu

@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <title>Haiku</title>
     <link rel="stylesheet" type="text/css" href="./css/application.css">
-    <link rel="stylesheet" type="text/css" href="./css/components/open-menu.sass">
+    <link rel="stylesheet" type="text/css" href="./css/components/menu.sass">
   </head>
   <body>
-    <div id="open-menu"> </div>
+    <div id="menu"> </div>
     <script>
       import React            from "react"
       import ReactDOM         from "react-dom"
-      import OpenMenu         from "./js/open-menu.jsx"
+      import Menu             from "./components/menu.jsx"
       import { ipcRenderer }  from "electron"
 
       function createInstance(params) {
@@ -19,8 +19,8 @@
       }
 
       ReactDOM.render(
-        <OpenMenu onSelect={createInstance} />,
-        document.getElementById('open-menu')
+        <Menu onSelect={createInstance} />,
+        document.getElementById('menu')
       )
     </script>
   </body>
