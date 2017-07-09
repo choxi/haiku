@@ -1,6 +1,4 @@
 const electron        = require('electron')
-const app             = electron.app
-const BrowserWindow   = electron.BrowserWindow
 const path            = require('path')
 const url             = require('url')
 const autoUpdater     = require("electron-updater").autoUpdater
@@ -8,13 +6,25 @@ const log             = require("electron-log")
 const OauthGithub     = require('electron-oauth-github')
 const fs              = require("fs")
 
-import { ipcMain } from "electron"
+import { app, BrowserWindow, Menu, ipcMain as ipc } from "electron"
 
 global.app = app
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
+
+function openMenu() {
+  let win = new BrowserWindow({
+    width: 600,
+    height: 500,
+    frame: false
+  })
+
+  win.loadURL(`file://${__dirname}/menu.html`)
+
+  return win
+}
 
 function login() {
   let config = require(path.join(__dirname, "..", "config", "config.json"))
@@ -44,35 +54,66 @@ function login() {
 login()
 
 function createWindow () {
-  function objectToParams(data) {
-    return Object.keys(data).map(key => `${key}=${encodeURIComponent(data[key])}`).join('&')
-  }
+  ipc.on("open-instance", (event, params) => {
+    let menu  = BrowserWindow.fromWebContents(event.sender)
+    let win   = new BrowserWindow({ width: 800, height: 600, show: false })
 
-  ipcMain.on("open-instance", (event, params) => {
-    let menu      = BrowserWindow.fromWebContents(event.sender)
-    let win       = new BrowserWindow({ width: 800, height: 600 })
+    menu.close()
 
     win.loadURL(`file://${__dirname}/terminal.html`)
     win.webContents.on("did-finish-load", () => {
       win.webContents.send("open-instance", params)
+      win.show()
     })
-
-    menu.close()
   })
 
-  mainWindow = new BrowserWindow({
-    icon: './images/Logo - Sunrise - Small - Blue.png',
-    width: 600,
-    height: 400
-  })
-
-  mainWindow.loadURL(`file://${__dirname}/menu.html`)
+  mainWindow = openMenu()
   mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null
   })
+
+  // Create Menubar
+  const template = [
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'New', accelerator: 'CmdOrCtrl+N', click: openMenu
+        }
+      ]
+    },
+    {
+      label: "Edit",
+      submenu: [
+          { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+          { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+          { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+          { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+      ]
+    },
+    {
+      label: "Developer",
+      submenu: [
+        {
+          label: "Refresh", accelerator: 'CmdOrCtrl+R', click: (item, focusedWindow) => {
+            focusedWindow.webContents.reload()
+          }
+        },
+        {
+          label: "Developer Tools", accelerator: 'CmdOrCtrl+Option+I', click: (item, focusedWindow) => {
+            focusedWindow.webContents.toggleDevTools()
+          }
+        }
+      ]
+    }
+  ]
+
+  // Create the menubar
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
 }
 
 // Quit when all windows are closed.
