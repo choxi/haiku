@@ -4,6 +4,8 @@ import Instance     from "../../lib/instance.js"
 import Xterm        from "xterm"
 Xterm.loadAddon("fit")
 
+const { app } = require('electron').remote
+
 export default class Terminal extends React.Component {
   componentDidMount() {
     let params        = this.props.params
@@ -73,7 +75,10 @@ export default class Terminal extends React.Component {
     window.onbeforeunload = function(event) {
       if(instance.status !== "stopped") {
         event.returnValue = false
-        instance.remove(window.close.bind(window)) 
+        instance.remove(() => {
+          window.close()
+          app.quit()
+        })
       }
     }
   }

@@ -82,6 +82,11 @@ function createWindow () {
       submenu: [
         {
           label: 'New', accelerator: 'CmdOrCtrl+N', click: openMenu
+        },
+        {
+          label: 'Quit', accelerator: 'CmdOrCtrl+Q', click: (event) => {
+            app.quit()
+          }
         }
       ]
     },
