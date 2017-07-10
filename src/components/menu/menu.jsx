@@ -54,6 +54,8 @@ export default class Menu extends React.Component {
   }
 
   delete(event) {
+    event.stopPropagation()
+
     let target        = event.currentTarget.parentElement
     let reservationId = target.getAttribute("data-reservation")
     let reservation   = Reservation.find(reservationId)

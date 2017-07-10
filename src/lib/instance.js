@@ -106,6 +106,8 @@ class Instance extends EventEmitter {
   remove(callback) {
     if(!this.reservation) {
       log.warn("You tried to call .remove() but no reservation was set")
+      this.status = "stopped"
+      callback()
       return
     }
 

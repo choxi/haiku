@@ -39,7 +39,7 @@ export default class Terminal extends React.Component {
     })
 
     var term = new Xterm({ cursorBlink: true });
-    term.open(document.getElementsByClassName('terminal-wrapper')[0])
+    term.open(document.getElementsByClassName('terminal-wrapper')[0], { focus: true })
     term.fit()
 
     instance.on("ready", function(keyPath, ipAddress) {
