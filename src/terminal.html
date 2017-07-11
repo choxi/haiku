@@ -8,13 +8,16 @@
   <body>
     <div id="terminal"> </div>
     <script>
-      import React            from "react"
-      import ReactDOM         from "react-dom"
-      import { ipcRenderer }  from "electron"
-      import Terminal         from "./components/terminal/terminal.jsx"
+      import React                    from "react"
+      import ReactDOM                 from "react-dom"
+      import { ipcRenderer as ipc }   from "electron"
+      import Terminal                 from "./components/terminal/terminal.jsx"
 
-      ipcRenderer.on("open-instance", (event, params) => {
-        ReactDOM.render(<Terminal params={ params }/>, document.getElementById("terminal"))
+      let terminal
+
+      ipc.on("open-instance", (event, params) => {
+        terminal = <Terminal params={ params } />
+        ReactDOM.render(terminal, document.getElementById("terminal"))
       })
     </script>
   </body>

@@ -3,6 +3,7 @@ import ReactDOM    from "react-dom"
 import NewMenu     from "./new-menu.jsx"
 import Reservation from "../../lib/reservation.js"
 import Instance    from "../../lib/instance.js"
+import Spinner     from "../spinner/spinner.jsx"
 
 export default class Menu extends React.Component {
   constructor() {
@@ -15,7 +16,8 @@ export default class Menu extends React.Component {
 
     this.state = {
       reservation: null,
-      reservations: Reservation.all()
+      reservations: Reservation.all(),
+      instances: Instance.all()
     }
   }
 
@@ -67,16 +69,19 @@ export default class Menu extends React.Component {
   }
 
   render() {
-    let reservations = this.state.reservations
-    let mappedReservations
+    let instances = Instance.all()
+    let mappedInstances
 
-    if(Object.keys(reservations).length !== 0) {
-      mappedReservations = Object.keys(reservations).map((key) => {
+    if(Object.keys(instances).length !== 0) {
+      mappedInstances = Object.keys(instances).map((key) => {
+        let instance = instances[key]
+
         return (
           <tr className={this.selectedClasses(key)} onClick={this.select} data-reservation={key} key={key}>
             <td>{key}</td>
             <td>Feb 24, 2017</td>
             <td onClick={this.delete}>Delete</td>
+            <td><Spinner load={ instance.getStatus } /></td>
           </tr>
         )
       })
@@ -89,8 +94,13 @@ export default class Menu extends React.Component {
 
           <table className="select-instance">
             <tbody>
-              <tr><th>Name</th><th>Created</th><th>Actions</th></tr>
-              { mappedReservations }
+              <tr>
+                <th>Name</th>
+                <th>Created</th>
+                <th>Actions</th>
+                <th>Status</th>
+              </tr>
+              { mappedInstances }
             </tbody>
           </table>
 

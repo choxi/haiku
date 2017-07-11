@@ -1,10 +1,10 @@
-const electron        = require('electron')
-const path            = require('path')
-const url             = require('url')
-const autoUpdater     = require("electron-updater").autoUpdater
-const log             = require("electron-log")
-const OauthGithub     = require('electron-oauth-github')
-const fs              = require("fs")
+import electron        from 'electron'
+import path            from 'path'
+import url             from 'url'
+import { autoUpdater } from "electron-updater"
+import log             from "electron-log"
+import OauthGithub     from 'electron-oauth-github'
+import fs              from "fs"
 
 import { app, BrowserWindow, Menu, ipcMain as ipc } from "electron"
 
@@ -86,6 +86,11 @@ function createWindow () {
         {
           label: 'Quit', accelerator: 'CmdOrCtrl+Q', click: (event) => {
             app.quit()
+          }
+        },
+        {
+          label: 'Detach', accelerator: 'CmdOrCtrl+D', click: (event, focusedWindow) => {
+            if(focusedWindow) focusedWindow.webContents.send("detach")
           }
         }
       ]

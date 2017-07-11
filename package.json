@@ -19,6 +19,7 @@
     "react": "",
     "react-dom": "",
     "simple-ssh": "",
+    "spin": "0.0.1",
     "string_decoder": "",
     "uuid": "",
     "xterm": "2.8.1"
