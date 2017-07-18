@@ -12,6 +12,7 @@ export default class Terminal extends React.Component {
     super(props)
 
     this.instance = new Instance(this.props.params)
+    window.terminal = this
 
     ipc.on("detach", (event) => {
       this.instance.detach(() => {
@@ -83,8 +84,8 @@ export default class Terminal extends React.Component {
     this.instance.create()
 
     window.addEventListener("resize", term.fit.bind(term))
-    window.onbeforeunload = function(event) {
-      if(this.instance.status !== "stopped" || this.instance.status !== "detached") {
+    window.onbeforeunload = (event) => {
+      if(this.instance.status !== "stopped" && this.instance.status !== "detached") {
         event.returnValue = false
         this.instance.remove(() => {
           window.close()

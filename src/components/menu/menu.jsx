@@ -4,6 +4,10 @@ import NewMenu     from "./new-menu.jsx"
 import Reservation from "../../lib/reservation.js"
 import Instance    from "../../lib/instance.js"
 import Spinner     from "../spinner/spinner.jsx"
+import electron    from "electron"
+import fs from "fs"
+
+const app = electron.remote.app
 
 export default class Menu extends React.Component {
   constructor() {
@@ -71,6 +75,9 @@ export default class Menu extends React.Component {
   render() {
     let instances = Instance.all()
     let mappedInstances
+    let images = {}
+    let imagesPath = app.getPath("appData") + "/Haiku/images.json"
+    if(fs.existsSync(imagesPath)) images = JSON.parse(fs.readFileSync(imagesPath))
 
     if(Object.keys(instances).length !== 0) {
       mappedInstances = Object.keys(instances).map((key) => {
@@ -106,7 +113,7 @@ export default class Menu extends React.Component {
 
           <button disabled={this.disableOpenButton()} onClick={this.create}>Open</button>
         </div>
-        <NewMenu onSelect={this.props.onSelect} />
+        <NewMenu onSelect={this.props.onSelect} images={ images } />
       </div>
     )
   }

@@ -9,7 +9,7 @@ export default class NewMenu extends React.Component {
     this.updateInstanceType   = this.updateInstanceType.bind(this)
     this.selectedClasses      = this.selectedClasses.bind(this)
     this.disableCreateButton  = this.disableCreateButton.bind(this)
-    this.instanceTypeOptions  = ["t1.micro", "g2.2xlarge"]
+    this.instanceTypeOptions  = ["t2.micro", "g2.2xlarge"]
 
     this.state = {
       name: null,
@@ -56,6 +56,14 @@ export default class NewMenu extends React.Component {
   }
 
   render() {
+    let imagesPartial = Object.keys(this.props.images).map((key) => {
+      let imageId = this.props.images[key].ImageId
+
+      return <div className={ this.selectedClasses(imageId) } key={ key } data-ami={ imageId } onClick={this.select}>
+        <p>{ key }</p>
+      </div>
+    })
+
     let instanceOptions = this.instanceTypeOptions.map((type) => {
       return (
         <option value={type} key={type}>{type}</option>
@@ -83,6 +91,7 @@ export default class NewMenu extends React.Component {
             <img src="./components/menu/icon-tensorflow.png" />
             <p> Tensorflow </p>
           </div>
+          { imagesPartial }
         </div>
         <p>
           <label>Instance Type  </label>

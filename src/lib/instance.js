@@ -35,6 +35,28 @@ export default class Instance extends EventEmitter {
     if(callback) callback()
   }
 
+  createImage() {
+    let name = "choxi/test-image"
+
+    let params = {
+      InstanceId: this.instanceIds()[0],
+      Name: name,
+      NoReboot: true
+    }
+
+    this.ec2.createImage(params, (err, data) => {
+      if(err) console.log(err)
+
+      console.log(data.ImageId)
+      let images = {}
+      let path   = app.getPath("appData") + "/Haiku/images.json"
+
+      if(fs.existsSync(path)) images = JSON.parse(fs.readFileSync(path))
+      images[name] = { ImageId: data.ImageId } 
+      fs.writeFileSync(path, JSON.stringify(images))
+    })
+  }
+
   create() {
     this.emit("creating")
     this.status = "running"
