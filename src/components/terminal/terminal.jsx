@@ -22,7 +22,7 @@ export default class Terminal extends React.Component {
   }
 
   componentDidMount() {
-    let loadingStatus = document.getElementsByClassName("loading-status")
+    let loadingStatus = document.getElementsByClassName("loading-status")[0]
 
     var innerProgress = new ProgressBar.SemiCircle('.progress-bar .inner-bar', {
       strokeWidth: 20,
@@ -38,13 +38,13 @@ export default class Terminal extends React.Component {
     innerProgress.animate(0.30, {duration: 40000})
     outerProgress.animate(0.25, {duration: 40000})
 
-    this.instance.on("starting", function() {
+    this.instance.on("starting", () => {
       innerProgress.animate(0.65, {duration: 17000})
       outerProgress.animate(0.5, {duration: 17000})
       loadingStatus.textContent = "Starting..."
     })
 
-    this.instance.on("connecting", function() {
+    this.instance.on("connecting", () => {
       innerProgress.animate(0.95, {duration: 17000})
       outerProgress.animate(0.75, {duration: 17000})
       loadingStatus.textContent = "Connecting..."
@@ -54,7 +54,7 @@ export default class Terminal extends React.Component {
     term.open(document.getElementsByClassName('terminal-wrapper')[0], { focus: true })
     term.fit()
 
-    this.instance.on("ready", function(keyPath, ipAddress) {
+    this.instance.on("ready", (keyPath, ipAddress) => {
       outerProgress.animate(1)
       innerProgress.animate(1, function() {
         document.getElementsByClassName("loading-screen")[0].style.display = "none"
