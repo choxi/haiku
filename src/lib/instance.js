@@ -47,7 +47,6 @@ export default class Instance extends EventEmitter {
     this.ec2.createImage(params, (err, data) => {
       if(err) console.log(err)
 
-      console.log(data.ImageId)
       let images = {}
       let path   = app.getPath("appData") + "/Haiku/images.json"
 
