@@ -53,6 +53,18 @@ function login() {
 
 login()
 
+function openLoginMenu() {
+  let win = new BrowserWindow({
+    width: 600,
+    height: 500,
+    frame: false
+  })
+
+  win.loadURL(`file://${__dirname}/login.html`)
+
+  return win
+}
+
 function createWindow () {
   ipc.on("open-instance", (event, params) => {
     let menu  = BrowserWindow.fromWebContents(event.sender)
@@ -67,7 +79,26 @@ function createWindow () {
     })
   })
 
-  mainWindow = openMenu()
+  ipc.on("login", (event, params) => {
+    let credentialsPath = path.join(app.getPath("appData"), "haiku", "credentials.json")
+    fs.writeFileSync(credentialsPath, JSON.stringify(params)) 
+  })
+
+  ipc.on("open-menu", (event) => {
+    let sender = BrowserWindow.fromWebContents(event.sender)
+    let win = new BrowserWindow({ width: 800, height: 600, show: false })
+
+    sender.close()
+
+    win.loadURL(`file://${__dirname}/menu.html`)
+    win.show()
+  })
+
+  if(fs.readFileSync(path.join(app.getPath("appData"), "haiku", "credentials.json")))
+    mainWindow = openMenu()
+  else
+    mainWindow = openLoginMenu()
+
   mainWindow.on('closed', function () {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time

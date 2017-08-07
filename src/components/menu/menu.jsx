@@ -19,10 +19,13 @@ export default class Menu extends React.Component {
     this.disableOpenButton    = this.disableOpenButton.bind(this)
 
     this.state = {
-      reservation: null,
-      reservations: Reservation.all(),
-      instances: Instance.all()
+      reservation: null
     }
+
+    Instance.all()
+    .then((instances) => {
+      this.setState({ instances: instances })
+    })
   }
 
   select(event) {
@@ -68,12 +71,16 @@ export default class Menu extends React.Component {
     let instance      = new Instance({reservation: reservation, name: reservationId})
 
     instance.terminate().then(() => {
-      this.setState({ reservations: Reservation.all(), reservation: null })
+      this.setState({ reservation: null })
     })
   }
 
   render() {
-    let instances = Instance.all()
+    if(!this.state.instances)
+      return <h1>Loading</h1>
+
+    let instances = this.state.instances
+
     let mappedInstances
     let images = {}
     let imagesPath = app.getPath("appData") + "/Haiku/images.json"
@@ -85,10 +92,10 @@ export default class Menu extends React.Component {
 
         return (
           <tr className={this.selectedClasses(key)} onClick={this.select} data-reservation={key} key={key}>
-            <td>{key}</td>
+            <td>{instance.params.name}</td>
             <td>Feb 24, 2017</td>
             <td onClick={this.delete}>Delete</td>
-            <td><Spinner load={ instance.getStatus } /></td>
+            <td>{ instance.params.state }</td>
           </tr>
         )
       })

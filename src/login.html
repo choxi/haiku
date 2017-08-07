@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Haiku</title>
+    <link rel="stylesheet" type="text/css" href="./components/menu/menu.sass">
+  </head>
+  <body>
+    <div id="login"> </div>
+    <script>
+      import React            from "react"
+      import ReactDOM         from "react-dom"
+      import Login            from "./components/login/login.jsx"
+      import { ipcRenderer }  from "electron"
+
+      function login(params) {
+        ipcRenderer.send("login", params)
+        ipcRenderer.send("open-menu")
+      }
+
+      ReactDOM.render(
+        <Login onLogin={ login } />,
+        document.getElementById('login')
+      )
+    </script>
+  </body>
+</html>

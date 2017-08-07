@@ -15,6 +15,8 @@ var config  = require(path.join(__dirname, "..", "..", "config", "config.json"))
 var SSH     = require("simple-ssh")
 var log     = require('electron-log')
 
+import Api from "./api"
+
 export default class Instance extends EventEmitter {
   constructor(params) {
     super()
@@ -22,12 +24,10 @@ export default class Instance extends EventEmitter {
     this.getStatus = this.getStatus.bind(this)
 
     this.params = params
-    this.ec2    = new AWS.EC2(config.ec2)
+    this.ec2 = new AWS.EC2(config.ec2)
 
     let accessTokenPath = app.getPath("appData") + "/Haiku/.github_access_token"
-    this.github         = new Github(fs.readFileSync(accessTokenPath))
-
-    return this
+    this.github = new Github(fs.readFileSync(accessTokenPath))
   }
 
   detach(callback) {
@@ -71,7 +71,7 @@ export default class Instance extends EventEmitter {
 
   startInstance(keyName) {
     return new Promise((resolve, reject) => {
-      if(this.params.reservation) {
+      if(this.params.id) {
         this.ec2.describeInstances({ InstanceIds: this.instanceIds(this.params.reservation) }, (err, data) => {
           if(err) log.error(err)
           this.reservation = data.Reservations[0]
@@ -98,6 +98,8 @@ export default class Instance extends EventEmitter {
           KeyName: keyName,
           SecurityGroupIds: ["sg-c64bf0a1"]
         }
+
+        Instance.api.post("/instances", p)
 
         this.ec2.runInstances(p, (err, data) => {
           if (err) log.error(err, err.stack) // an error occurred
@@ -284,19 +286,15 @@ export default class Instance extends EventEmitter {
   }
 }
 
+Instance.api = new Api()
+
 Instance.all = () => {
-  let path          = app.getPath("appData") + "/Haiku/reservations.json"
-  let reservations  = {}
-
-  if(fs.existsSync(path)) {
-    reservations = JSON.parse(fs.readFileSync(path))
-  }
-
-  Object.keys(reservations).forEach((key) => {
-    reservations[key] = new Instance({ name: key, reservation: reservations[key] })
+  return new Promise((resolve, reject) => {
+    Instance.api.get("/instances")
+    .then((instances) => {
+      resolve(instances.map((instance) => new Instance(instance)))
+    })
   })
-
-  return reservations
 }
 
 ////////////////////////////////////////////////////////////////////////
