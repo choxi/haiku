@@ -9,11 +9,11 @@ export default class Api {
     this.baseUri = "https://haikuapp-api.herokuapp.com"
 
     let credentialsPath = app.getPath("appData") + "/Haiku/credentials.json"
-    this.token = JSON.parse(fs.readFileSync(credentialsPath)).token
+    this.credentials = JSON.parse(fs.readFileSync(credentialsPath))
   }
 
   post(path, params={}) {
-    params.token = this.token
+    params.token = this.credentials.token
 
     return new Promise((resolve, reject) => {
       fetch(this.baseUri + path, {
@@ -30,7 +30,7 @@ export default class Api {
   }
 
   get(path, params={}) {
-    params.token = this.token
+    params.token = this.credentials.token
 
     return new Promise((resolve, reject) => {
       let queryString = url.format({ query: params })
@@ -47,7 +47,7 @@ export default class Api {
   }
 
   put(path, params={}) {
-    params.token = this.token
+    params.token = this.credentials.token
 
     return new Promise((resolve, reject) => {
       fetch(this.baseUri + path, {

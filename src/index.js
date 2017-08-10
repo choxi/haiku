@@ -80,8 +80,14 @@ function createWindow () {
   })
 
   ipc.on("login", (event, params) => {
+    let key = params.key
+    params.key = undefined
+
     let credentialsPath = path.join(app.getPath("appData"), "haiku", "credentials.json")
     fs.writeFileSync(credentialsPath, JSON.stringify(params)) 
+
+    let keyPath = path.join(app.getPath("appData"), "haiku", "Haiku.pem")
+    fs.writeFileSync(keyPath, key.KeyMaterial, { mode: "400" })
   })
 
   ipc.on("open-menu", (event) => {
@@ -94,7 +100,7 @@ function createWindow () {
     win.show()
   })
 
-  if(fs.readFileSync(path.join(app.getPath("appData"), "haiku", "credentials.json")))
+  if(fs.existsSync(path.join(app.getPath("appData"), "haiku", "credentials.json")))
     mainWindow = openMenu()
   else
     mainWindow = openLoginMenu()

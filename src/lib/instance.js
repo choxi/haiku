@@ -62,14 +62,14 @@ export default class Instance extends EventEmitter {
 
     log.info("Creating Instance...")
 
-    this.findOrCreateKey().then(this.startInstance.bind(this))
-                          .then(() => { this.pollInstanceState("running") })
-                          .then(this.pollSSHConnection.bind(this))
-                          .then(this.setupGit.bind(this))
-                          .then(function() { log.info("Done") })
+        this.startInstance()
+        .then((instance) => this.pollInstanceState("running", instance))
+        .then((instance) => this.pollSSHConnection(instance))
+        .then(this.setupGit.bind(this))
+        .then(function() { log.info("Done") })
   }
 
-  startInstance(keyName) {
+  startInstance() {
     return new Promise((resolve, reject) => {
       if(this.params.id) {
         this.ec2.describeInstances({ InstanceIds: this.instanceIds(this.params.reservation) }, (err, data) => {
@@ -91,53 +91,14 @@ export default class Instance extends EventEmitter {
         })
       } else {
         let p = {
-          ImageId: this.params.ami,
-          InstanceType: this.params.instanceType,
-          MaxCount: 1,
-          MinCount: 1,
-          KeyName: keyName,
-          SecurityGroupIds: ["sg-c64bf0a1"]
+          name: this.params.name,
+          image_id: this.params.ami,
+          type: this.params.instanceType
         }
 
         Instance.api.post("/instances", p)
-
-        this.ec2.runInstances(p, (err, data) => {
-          if (err) log.error(err, err.stack) // an error occurred
-          else {
-            this.reservation = data
-            resolve()
-          }
-        })
-      }
-    })
-  }
-
-  findOrCreateKey() {
-    return new Promise((resolve, reject) => {
-      var keyFiles = glob.sync(this.appDataPath() + "/*.pem")
-
-      if(keyFiles.length > 0) {
-        let paths     = keyFiles[0].split("/")
-        this.keyName  = paths[paths.length - 1].match(/(.+)\.pem/)[1]
-
-        resolve(this.keyName)
-      } else {
-        this.createAndSaveKeyPair(resolve, reject)
-      }
-    })
-  }
-
-  createAndSaveKeyPair(resolve, reject) {
-    var keyId   =  uuid()
-    var keyName = "Haiku-" + keyId
-
-    this.ec2.createKeyPair({ KeyName: keyName }, (err, data) => {
-      if (err) log.error(err, err.stack)
-      else {
-        fs.writeFile(this.appDataPath() + "/" + keyName + ".pem", data.KeyMaterial, {mode: "400"}, (err) => {
-          if(err) return log.error(err)
-          this.keyName = keyName
-          resolve(keyName)
+        .then((instance) => {
+          resolve(instance)
         })
       }
     })
@@ -178,43 +139,50 @@ export default class Instance extends EventEmitter {
     return instanceIds
   }
 
-  pollInstanceState(state, r) {
-    let reservation = r || this.reservation
+  pollInstanceState(state, instance) {
+    let reloadedInstance
 
-    return poll((ready) => {
-      this.ec2.describeInstances({ InstanceIds: this.instanceIds(reservation) }, (err, data) => {
-        this.reservation = data.Reservations[0]
-        ready(instancesInState(this.reservation, state))
+    return new Promise((resolve, reject) => {
+      poll((ready) => {
+        Instance.api.get(`/instances/${instance.id}`)
+        .then((newInstance) => {
+          reloadedInstance = newInstance
+          ready(newInstance.state === state) 
+        })
+      })
+      .then(() => {
+        console.log(`Reloaded: ${reloadedInstance}`)
+        resolve(reloadedInstance)
       })
     })
   }
 
   keyPath() {
-    return this.appDataPath() + "/" + this.keyName + ".pem"
+    return this.appDataPath() + "/Haiku.pem"
   }
 
   appDataPath() {
     return app.getPath("appData") + "/Haiku"
   }
 
-  pollSSHConnection() {
+  pollSSHConnection(instance) {
     this.emit("connecting")
     log.info("Waiting for SSH Connection...")
 
-    return poll(function(ready) {
-
+    return poll((ready) => {
       let config = {
-        host: this.reservation.Instances[0].PublicIpAddress,
+        host: instance.public_ip_address,
         user: 'ec2-user',
         key: fs.readFileSync(this.keyPath()),
         timeout: 1000
       }
+
       let ssh = new SSH(config)
 
       ssh.exec("exit").start({
         success: () => {
           log.info("Instance Ready")
-          this.emit("ready", this.keyPath(), this.reservation.Instances[0].PublicIpAddress)
+          this.emit("ready", this.keyPath(), instance.public_ip_address)
           ready(true)
         },
         fail: (err) => {
@@ -225,7 +193,7 @@ export default class Instance extends EventEmitter {
           ready(false)
         }
       })
-    }.bind(this))
+    })
   }
 
   setupGit() {

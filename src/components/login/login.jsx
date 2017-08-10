@@ -11,8 +11,8 @@ export default class Login extends React.Component {
   registerUser() {
     let params = {
       name: this.name.value,
-      email: this.email.value,
-      password: this.password.value
+      email: this.registerEmail.value,
+      password: this.registerPassword.value
     }
 
     fetch("https://haikuapp-api.herokuapp.com/users", {
@@ -22,17 +22,20 @@ export default class Login extends React.Component {
       },
       method: "POST",
       body: JSON.stringify(params)
-    }).then((response) => {
-      response.json().then(body => console.log(body))
-    }).catch((error) => {
+    }).then((response) => response.json())
+    .then((body) => {
+      if(body.success !== false && this.props.onLogin)
+        this.props.onLogin(body)
+    })
+    .catch((error) => {
       console.log(error)
     })
   }
 
   loginUser() {
     let params = {
-      email: this.email.value,
-      password: this.password.value
+      email: this.loginEmail.value,
+      password: this.loginPassword.value
     }
 
     fetch("https://haikuapp-api.herokuapp.com/login", {
@@ -57,13 +60,13 @@ export default class Login extends React.Component {
     return <div className="Login">
       <h1>Register</h1>
       <input placeholder="name" type="text" ref={ (node) => this.name = node } />
-      <input placeholder="email" type="text" ref={ (node) => this.email = node } />
-      <input placeholder="password" type="text" ref={ (node) => this.password = node } />
+      <input placeholder="email" type="text" ref={ (node) => this.registerEmail = node } />
+      <input placeholder="password" type="text" ref={ (node) => this.registerPassword = node } />
       <input type="submit" value="Register" onClick={ this.registerUser }/>
 
       <h1>Login</h1>
-      <input placeholder="email" type="text" ref={ (node) => this.email = node } />
-      <input placeholder="password" type="text" ref={ (node) => this.password = node } />
+      <input placeholder="email" type="text" ref={ (node) => this.loginEmail = node } />
+      <input placeholder="password" type="text" ref={ (node) => this.loginPassword = node } />
       <input type="submit" value="Login" onClick={ this.loginUser }/>
     </div>
   }
