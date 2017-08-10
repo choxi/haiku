@@ -8,7 +8,6 @@ import electron    from "electron"
 import fs from "fs"
 
 const app = electron.remote.app
-
 export default class Menu extends React.Component {
   constructor() {
     super()
@@ -19,7 +18,7 @@ export default class Menu extends React.Component {
     this.disableOpenButton    = this.disableOpenButton.bind(this)
 
     this.state = {
-      reservation: null
+      selected: null
     }
 
     Instance.all()
@@ -28,20 +27,12 @@ export default class Menu extends React.Component {
     })
   }
 
-  select(event) {
-    let target        = event.currentTarget
-    let reservationId = target.getAttribute("data-reservation")
-    let reservation
-
-    if(!!reservationId) {
-      reservation = Reservation.find(reservationId)
-    }
-
-    this.setState({ reservation: reservationId })
+  select(instance) {
+    this.setState({ selected: instance })
   }
 
-  selectedClasses(value) {
-    if(!!this.state.reservation && (value === this.state.reservation)) {
+  selectedClasses(instance) {
+    if(this.state.selected && (this.state.selected.params.id === instance.params.id)) {
       return "selected"
     } else {
       return ""
@@ -49,17 +40,11 @@ export default class Menu extends React.Component {
   }
 
   create(event) {
-    let name = this.state.reservation
-    let params = {
-      name:         name,
-      reservation:  Reservation.find(name)
-    }
-
-    this.props.onSelect(params)
+    this.props.onSelect(this.state.selected)
   }
 
   disableOpenButton() {
-    return !this.state.reservation
+    return !this.state.selected
   }
 
   delete(event) {
@@ -91,10 +76,10 @@ export default class Menu extends React.Component {
         let instance = instances[key]
 
         return (
-          <tr className={this.selectedClasses(key)} onClick={this.select} data-reservation={key} key={key}>
-            <td>{instance.params.name}</td>
+          <tr className={ this.selectedClasses(instance) } onClick={ () => this.select(instance) } key={ key }>
+            <td>{ instance.params.name }</td>
             <td>Feb 24, 2017</td>
-            <td onClick={this.delete}>Delete</td>
+            <td onClick={ this.delete }>Delete</td>
             <td>{ instance.params.state }</td>
           </tr>
         )
@@ -118,9 +103,9 @@ export default class Menu extends React.Component {
             </tbody>
           </table>
 
-          <button disabled={this.disableOpenButton()} onClick={this.create}>Open</button>
+          <button disabled={ this.disableOpenButton() } onClick={ this.create }>Open</button>
         </div>
-        <NewMenu onSelect={this.props.onSelect} images={ images } />
+        <NewMenu onSelect={ this.props.onSelect } images={ images } />
       </div>
     )
   }

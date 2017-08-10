@@ -21,8 +21,6 @@ export default class Instance extends EventEmitter {
   constructor(params) {
     super()
 
-    this.getStatus = this.getStatus.bind(this)
-
     this.params = params
     this.ec2 = new AWS.EC2(config.ec2)
 
@@ -71,22 +69,15 @@ export default class Instance extends EventEmitter {
 
   startInstance() {
     return new Promise((resolve, reject) => {
-      if(this.params.id) {
-        this.ec2.describeInstances({ InstanceIds: this.instanceIds(this.params.reservation) }, (err, data) => {
-          if(err) log.error(err)
-          this.reservation = data.Reservations[0]
-
-          // Check if still running
-          if(instancesInState(this.reservation, "running"))
-            resolve()
+      if(this.params.params && this.params.params.id) {
+        Instance.api.get(`/instances/${this.params.params.id}`)
+        .then((instance) => {
+          if(instance.state === "running")
+            resolve(instance)
           else {
-            this.pollInstanceState("stopped", this.params.reservation).then(() => {
-              this.ec2.startInstances({InstanceIds: this.instanceIds(this.params.reservation)}, (err, data) => {
-                if(err) log.error(err)
-                this.reservation = this.params.reservation
-                resolve()
-              })
-            })
+            this.pollInstanceState("stopped", instance)
+            .then((instance) => Instance.api.put(`/instances/${instance.id}`, { state: "running" }))
+            .then((instance) => resolve(instance))             
           }
         })
       } else {
@@ -97,9 +88,7 @@ export default class Instance extends EventEmitter {
         }
 
         Instance.api.post("/instances", p)
-        .then((instance) => {
-          resolve(instance)
-        })
+        .then(resolve)
       }
     })
   }
@@ -242,15 +231,6 @@ export default class Instance extends EventEmitter {
         this.github.deleteKey("Haiku-" + this.params.name).then(resolve)
       })
    })
-  }
-
-  getStatus() {
-    return new Promise((resolve, reject) => {
-      this.ec2.describeInstances({ InstanceIds: this.instanceIds(this.params.reservation) }, (err, data) => {
-        let instance = data.Reservations[0].Instances[0]
-        resolve(instance.State.Name) 
-      })
-    })
   }
 }
 
