@@ -17,12 +17,14 @@ var log     = require('electron-log')
 
 import Api from "./api"
 
+const ATTR_ACCESSIBLE = "id name state type image_id public_ip_address ami instanceType".split(" ")
 export default class Instance extends EventEmitter {
-  constructor(params) {
+  constructor(attributes) {
     super()
 
-    this.params = params
-    this.ec2 = new AWS.EC2(config.ec2)
+    ATTR_ACCESSIBLE.forEach((attr) => {
+      this[attr] = attributes[attr]
+    })
 
     let accessTokenPath = app.getPath("appData") + "/Haiku/.github_access_token"
     this.github = new Github(fs.readFileSync(accessTokenPath))
@@ -49,71 +51,72 @@ export default class Instance extends EventEmitter {
       let path   = app.getPath("appData") + "/Haiku/images.json"
 
       if(fs.existsSync(path)) images = JSON.parse(fs.readFileSync(path))
-      images[name] = { ImageId: data.ImageId } 
+      images[name] = { ImageId: data.ImageId }
       fs.writeFileSync(path, JSON.stringify(images))
     })
   }
 
-  create() {
+  start() {
     this.emit("creating")
     this.status = "running"
 
     log.info("Creating Instance...")
 
-        this.startInstance()
-        .then((instance) => this.pollInstanceState("running", instance))
-        .then((instance) => this.pollSSHConnection(instance))
-        .then(this.setupGit.bind(this))
-        .then(function() { log.info("Done") })
+    let startedInstance
+
+    this.startInstance()
+    .then((instance) => this.pollInstanceState("running", instance))
+    .then((instance) => this.pollSSHConnection(instance))
+    .then((instance) => this.setupGit(instance))
+    .then((instance) => {
+      this.instance = instance
+      log.info("Done")
+    })
   }
 
   startInstance() {
     return new Promise((resolve, reject) => {
-      if(this.params.params && this.params.params.id) {
-        Instance.api.get(`/instances/${this.params.params.id}`)
-        .then((instance) => {
-          if(instance.state === "running")
+      if(this.id) {
+        Instance.api.get(`/instances/${this.id}`)
+        .then((data) => {
+          let instance = new Instance(data)
+
+          if(data.state === "running")
             resolve(instance)
           else {
             this.pollInstanceState("stopped", instance)
             .then((instance) => Instance.api.put(`/instances/${instance.id}`, { state: "running" }))
-            .then((instance) => resolve(instance))             
+            .then((data) => resolve(new Instance(data)))
           }
         })
       } else {
-        let p = {
-          name: this.params.name,
-          image_id: this.params.ami,
-          type: this.params.instanceType
+        let params = {
+          name: this.name,
+          image_id: this.ami,
+          type: this.instanceType
         }
 
-        Instance.api.post("/instances", p)
-        .then(resolve)
+        Instance.api.post("/instances", params)
+        .then((data) => {
+          resolve(new Instance(data))
+        })
       }
     })
   }
 
-  remove(callback) {
-    if(!this.reservation) {
-      log.warn("You tried to call .remove() but no reservation was set")
-      this.status = "stopped"
+  stop(callback) {
+    if(!this.id) {
+      log.warn("You tried to call .remove() but no id was set")
+      this.state = "stopped"
       callback()
-      return
+    } else {
+      log.info("Stopping Instance")
+      Instance.api.put(`/instances/${this.id}`, { state: "stopped" })
+      .then((instance) => {
+        this.state = "stopped"
+        callback()
+      })
     }
-
-    log.info("Stopping Instance")
-    this.ec2.stopInstances({ InstanceIds: this.instanceIds() }, (err, data) => {
-      if(err) log.error(err)
-
-      let reservations = {}
-      let path = app.getPath("appData") + "/Haiku/reservations.json"
-      if(fs.existsSync(path)) reservations = JSON.parse(fs.readFileSync(path))
-      reservations[this.params.name] = this.reservation
-      fs.writeFileSync(path, JSON.stringify(reservations))
-
-      this.status = "stopped"
-      callback()
-    })
   }
 
   instanceIds(r) {
@@ -136,13 +139,10 @@ export default class Instance extends EventEmitter {
         Instance.api.get(`/instances/${instance.id}`)
         .then((newInstance) => {
           reloadedInstance = newInstance
-          ready(newInstance.state === state) 
+          ready(newInstance.state === state)
         })
       })
-      .then(() => {
-        console.log(`Reloaded: ${reloadedInstance}`)
-        resolve(reloadedInstance)
-      })
+      .then(() => resolve(reloadedInstance))
     })
   }
 
@@ -158,38 +158,44 @@ export default class Instance extends EventEmitter {
     this.emit("connecting")
     log.info("Waiting for SSH Connection...")
 
-    return poll((ready) => {
-      let config = {
-        host: instance.public_ip_address,
-        user: 'ec2-user',
-        key: fs.readFileSync(this.keyPath()),
-        timeout: 1000
-      }
-
-      let ssh = new SSH(config)
-
-      ssh.exec("exit").start({
-        success: () => {
-          log.info("Instance Ready")
-          this.emit("ready", this.keyPath(), instance.public_ip_address)
-          ready(true)
-        },
-        fail: (err) => {
-          if(err.message !== "Timed out while waiting for handshake" && err.code !== "ECONNREFUSED") {
-            log.error(err)
-          }
-
-          ready(false)
+    return new Promise((resolve, reject) => {
+      poll((ready) => {
+        let config = {
+          host: instance.public_ip_address,
+          user: 'ec2-user',
+          key: fs.readFileSync(this.keyPath()),
+          timeout: 1000
         }
+
+        let ssh = new SSH(config)
+
+        ssh.exec("exit").start({
+          success: () => {
+            log.info("Instance Ready")
+            this.emit("ready", this.keyPath(), instance.public_ip_address)
+            ready(true)
+          },
+          fail: (err) => {
+            if(err.message !== "Timed out while waiting for handshake" && err.code !== "ECONNREFUSED") {
+              log.error(err)
+            }
+
+            ready(false)
+          }
+        })
       })
+      .then(() => resolve(instance))
     })
   }
 
-  setupGit() {
+  setupGit(instance) {
     log.info("Setup Git")
+
+    return Promise.resolve(instance)
+
     return new Promise((resolve, reject) => {
       let ssh             = new NodeSSH()
-      let keyName         = "Haiku-" + this.params.name.replace(/ /g, "")
+      let keyName         = "Haiku-" + this.name.replace(/ /g, "")
 
       let sshConfig  = {
         host: this.reservation.Instances[0].PublicIpAddress,
@@ -222,14 +228,12 @@ export default class Instance extends EventEmitter {
 
   terminate() {
     return new Promise((resolve, reject) => {
-      let ids = this.instanceIds(this.params.reservation)
-      this.ec2.terminateInstances({InstanceIds: ids}, (err, data) => {
-        if(err) log.error(err)
-        log.info(`Terminated Instance: ${this.params.name}`)
-
-        Reservation.destroy(this.params.name)
-        this.github.deleteKey("Haiku-" + this.params.name).then(resolve)
+      Instance.api.put(`/instances/${this.id}`, { state: "terminated" })
+      .then((instance) => {
+        log.info(`Terminated Instance: ${this.name}`)
+        return this.github.deleteKey("Haiku-" + this.name)
       })
+      .then(resolve)
    })
   }
 }

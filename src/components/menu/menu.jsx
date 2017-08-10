@@ -32,7 +32,7 @@ export default class Menu extends React.Component {
   }
 
   selectedClasses(instance) {
-    if(this.state.selected && (this.state.selected.params.id === instance.params.id)) {
+    if(this.state.selected && (this.state.selected.id === instance.id)) {
       return "selected"
     } else {
       return ""
@@ -47,17 +47,12 @@ export default class Menu extends React.Component {
     return !this.state.selected
   }
 
-  delete(event) {
+  delete(event, instance) {
     event.stopPropagation()
 
-    let target        = event.currentTarget.parentElement
-    let reservationId = target.getAttribute("data-reservation")
-    let reservation   = Reservation.find(reservationId)
-    let instance      = new Instance({reservation: reservation, name: reservationId})
-
-    instance.terminate().then(() => {
-      this.setState({ reservation: null })
-    })
+    instance.terminate()
+    .then(Instance.all)
+    .then((instances) => this.setState({ instances: instances, selected: null }))
   }
 
   render() {
@@ -77,10 +72,10 @@ export default class Menu extends React.Component {
 
         return (
           <tr className={ this.selectedClasses(instance) } onClick={ () => this.select(instance) } key={ key }>
-            <td>{ instance.params.name }</td>
+            <td>{ instance.name }</td>
             <td>Feb 24, 2017</td>
-            <td onClick={ this.delete }>Delete</td>
-            <td>{ instance.params.state }</td>
+            <td onClick={ (event) => this.delete(event, instance) }>Delete</td>
+            <td>{ instance.state }</td>
           </tr>
         )
       })
