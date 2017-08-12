@@ -100,6 +100,10 @@ function createWindow () {
     win.show()
   })
 
+  let payment = new BrowserWindow({ width: 600, height: 400, show: false })
+  payment.loadURL(`file://${__dirname}/payment.html`)
+  payment.show()
+
   if(fs.existsSync(path.join(app.getPath("appData"), "haiku", "credentials.json")))
     mainWindow = openMenu()
   else

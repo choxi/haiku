@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Haiku</title>
+    <link rel="stylesheet" type="text/css" href="./components/menu/menu.sass">
+  </head>
+  <body>
+    <div id="payment"> </div>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+      import React            from "react"
+      import ReactDOM         from "react-dom"
+      import Payment          from "./components/payment/payment.jsx"
+      import { ipcRenderer }  from "electron"
+
+      ReactDOM.render(
+        <Payment />,
+        document.getElementById('payment')
+      )
+    </script>
+  </body>
+</html>

@@ -18,6 +18,7 @@
     "pty": "",
     "react": "",
     "react-dom": "",
+    "react-stripe-elements": "0.0.7",
     "simple-ssh": "",
     "spin": "0.0.1",
     "string_decoder": "",

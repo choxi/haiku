@@ -1,8 +1,8 @@
-import url from "url"
-const electron      = require('electron')
-const remote        = electron.remote
-const app           = remote.getGlobal("app")
-var fs      = require("fs")
+import url  from "url"
+import fs   from "fs"
+
+import { remote } from "electron"
+const app = remote.getGlobal("app")
 
 export default class Api {
   constructor() {
