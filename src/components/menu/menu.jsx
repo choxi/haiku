@@ -1,11 +1,12 @@
-import React       from "react"
-import ReactDOM    from "react-dom"
-import NewMenu     from "./new-menu.jsx"
-import Reservation from "../../lib/reservation.js"
-import Instance    from "../../lib/instance.js"
-import Spinner     from "../spinner/spinner.jsx"
-import electron    from "electron"
-import fs from "fs"
+import React        from "react"
+import ReactDOM     from "react-dom"
+import NewMenu      from "./new-menu.jsx"
+import Reservation  from "../../lib/reservation.js"
+import Instance     from "../../lib/instance.js"
+import Spinner      from "../spinner/spinner.jsx"
+import electron     from "electron"
+import fs           from "fs"
+import Api          from "../../lib/api.js"
 
 const app = electron.remote.app
 export default class Menu extends React.Component {
@@ -25,6 +26,10 @@ export default class Menu extends React.Component {
     .then((instances) => {
       this.setState({ instances: instances })
     })
+
+    let api = new Api()
+    api.get("/images")
+    .then(data => this.setState({ images: data }))
   }
 
   select(instance) {
@@ -56,16 +61,13 @@ export default class Menu extends React.Component {
   }
 
   render() {
-    if(!this.state.instances)
+    if(!this.state.instances && !this.state.images)
       return <h1>Loading</h1>
 
     let instances = this.state.instances
+    let images = this.state.images
 
     let mappedInstances
-    let images = {}
-    let imagesPath = app.getPath("appData") + "/Haiku/images.json"
-    if(fs.existsSync(imagesPath)) images = JSON.parse(fs.readFileSync(imagesPath))
-
     if(Object.keys(instances).length !== 0) {
       mappedInstances = Object.keys(instances).map((key) => {
         let instance = instances[key]

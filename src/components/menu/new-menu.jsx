@@ -56,11 +56,15 @@ export default class NewMenu extends React.Component {
   }
 
   render() {
-    let imagesPartial = Object.keys(this.props.images).map((key) => {
-      let imageId = this.props.images[key].ImageId
+    if(!this.props.images)
+      return <h1>Loading</h1>
 
-      return <div className={ this.selectedClasses(imageId) } key={ key } data-ami={ imageId } onClick={this.select}>
-        <p>{ key }</p>
+    let imagesPartial = this.props.images.map((image) => {
+      let imageId = image.ec2Id
+
+      return <div className={ "ruby " + this.selectedClasses(imageId) } key={ image.id } data-ami={ imageId } onClick={ this.select }>
+        <img src="./components/menu/icon-ruby.png" />
+        <p>{ image.name }</p>
       </div>
     })
 

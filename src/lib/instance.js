@@ -22,6 +22,8 @@ export default class Instance extends EventEmitter {
   constructor(attributes) {
     super()
 
+    window.instance = this
+
     ATTR_ACCESSIBLE.forEach((attr) => {
       this[attr] = attributes[attr]
     })
@@ -38,21 +40,9 @@ export default class Instance extends EventEmitter {
   createImage() {
     let name = "choxi/test-image"
 
-    let params = {
-      InstanceId: this.instanceIds()[0],
-      Name: name,
-      NoReboot: true
-    }
-
-    this.ec2.createImage(params, (err, data) => {
-      if(err) console.log(err)
-
-      let images = {}
-      let path   = app.getPath("appData") + "/Haiku/images.json"
-
-      if(fs.existsSync(path)) images = JSON.parse(fs.readFileSync(path))
-      images[name] = { ImageId: data.ImageId }
-      fs.writeFileSync(path, JSON.stringify(images))
+    Instance.api.post("/images", { name: name, instance_id: this.id })
+    .then((response) => {
+      debugger
     })
   }
 
