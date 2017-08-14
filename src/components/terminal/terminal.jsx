@@ -3,6 +3,7 @@ import { ipcRenderer as ipc } from "electron"
 import ProgressBar  from "progressbar.js"
 import Instance     from "../../lib/instance.js"
 import Xterm        from "xterm"
+import Status       from "./status.jsx"
 Xterm.loadAddon("fit")
 
 const { app } = require('electron').remote
@@ -13,6 +14,8 @@ export default class Terminal extends React.Component {
 
     this.instance = new Instance(this.props.params)
 
+    this.state = { status: "Creating instance..." }
+
     ipc.on("detach", (event) => {
       this.instance.detach(() => {
         window.close()
@@ -21,8 +24,6 @@ export default class Terminal extends React.Component {
   }
 
   componentDidMount() {
-    let loadingStatus = document.getElementsByClassName("loading-status")[0]
-
     var innerProgress = new ProgressBar.SemiCircle('.progress-bar .inner-bar', {
       strokeWidth: 20,
       color: "#FF8000"
@@ -33,20 +34,19 @@ export default class Terminal extends React.Component {
       color: "#D0E162"
     })
 
-    loadingStatus.textContent = "Creating Instance..."
     innerProgress.animate(0.30, {duration: 40000})
     outerProgress.animate(0.25, {duration: 40000})
 
     this.instance.on("starting", () => {
       innerProgress.animate(0.65, {duration: 17000})
       outerProgress.animate(0.5, {duration: 17000})
-      loadingStatus.textContent = "Starting..."
+      this.setState({ status: "Starting..." })
     })
 
     this.instance.on("connecting", () => {
       innerProgress.animate(0.95, {duration: 17000})
       outerProgress.animate(0.75, {duration: 17000})
-      loadingStatus.textContent = "Connecting..."
+      this.setState({ status: "Connecting..." })
     })
 
     var term = new Xterm({ cursorBlink: true });
@@ -98,15 +98,17 @@ export default class Terminal extends React.Component {
   render() {
     return <div>
       <div className="loading-screen">
-        <div className="progress-bar">
-          <div className="inner-bar"></div>
-          <div className="outer-bar"></div>
-          <div className="center"></div>
-          <div className="ripple-1"></div>
-          <div className="ripple-2"></div>
-          <div className="ripple-3"></div>
+        <div className="progress">
+          <div className="progress-bar">
+            <div className="inner-bar"></div>
+            <div className="outer-bar"></div>
+            <div className="center"></div>
+            <div className="ripple-1"></div>
+            <div className="ripple-2"></div>
+            <div className="ripple-3"></div>
+          </div>
+          <Status text={ this.state.status } />
         </div>
-        <p className="loading-status">Creating Instance...</p>
       </div>
       <div className="terminal-wrapper"></div>
     </div>

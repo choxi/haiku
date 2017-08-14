@@ -55,7 +55,10 @@ export default class Instance extends EventEmitter {
     let startedInstance
 
     return this.startInstance()
-      .then(instance => this.pollInstanceState("running", instance))
+      .then(instance => {
+        this.emit("starting")
+        return this.pollInstanceState("running", instance)
+      })
       .then(instance => this.pollSSHConnection(instance))
       .then(instance => this.setupGit(instance))
   }

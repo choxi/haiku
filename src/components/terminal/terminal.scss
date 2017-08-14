@@ -21,6 +21,9 @@ html, body {
   bottom: 0;
   text-align: center;
   z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .loading-screen h1 {
@@ -29,7 +32,6 @@ html, body {
 
 .progress-bar {
   width: 200px;
-  margin: 120px auto 0;
   position: relative;
 }
 
