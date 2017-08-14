@@ -81,6 +81,7 @@ export default class Terminal extends React.Component {
     })
 
     this.instance.start()
+      .then(instance => this.instance = instance)
 
     window.addEventListener("resize", term.fit.bind(term))
     window.onbeforeunload = (event) => {

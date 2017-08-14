@@ -54,14 +54,10 @@ export default class Instance extends EventEmitter {
 
     let startedInstance
 
-    this.startInstance()
-    .then((instance) => this.pollInstanceState("running", instance))
-    .then((instance) => this.pollSSHConnection(instance))
-    .then((instance) => this.setupGit(instance))
-    .then((instance) => {
-      this.instance = instance
-      log.info("Done")
-    })
+    return this.startInstance()
+      .then(instance => this.pollInstanceState("running", instance))
+      .then(instance => this.pollSSHConnection(instance))
+      .then(instance => this.setupGit(instance))
   }
 
   startInstance() {
@@ -128,7 +124,7 @@ export default class Instance extends EventEmitter {
       poll((ready) => {
         Instance.api.get(`/instances/${instance.id}`)
         .then((newInstance) => {
-          reloadedInstance = newInstance
+          reloadedInstance = new Instance(newInstance)
           ready(newInstance.state === state)
         })
       })
